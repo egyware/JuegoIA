@@ -1,0 +1,26 @@
+
+main.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+dinosaurio_verde
+  rotate: false
+  xy: 1, 1
+  size: 22, 26
+  orig: 22, 26
+  offset: 0, 0
+  index: 1
+dinosaurio_verde
+  rotate: false
+  xy: 25, 1
+  size: 22, 26
+  orig: 22, 26
+  offset: 0, 0
+  index: 2
+dinosaurio_verde
+  rotate: false
+  xy: 49, 1
+  size: 22, 26
+  orig: 22, 26
+  offset: 0, 0
+  index: 3

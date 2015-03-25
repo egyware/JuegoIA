@@ -9,6 +9,8 @@ package com.egysoft.ia.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  *
@@ -16,10 +18,15 @@ import com.badlogic.gdx.graphics.GL20;
  */
 public class Gameloop implements Screen
 {
-    final JuegoIA game;
-    public Gameloop(JuegoIA game)
+    private final JuegoIA juego;
+    private Stage game;
+    private Stage hud;
+    
+    public Gameloop(JuegoIA j)
     {
-        this.game = game;
+        juego = j;
+        
+        juego.assets.load("assets/main.atlas", TextureAtlas.class);
     }
 
     @Override
@@ -31,9 +38,7 @@ public class Gameloop implements Screen
     public void render(float delta) 
     {    
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
-        
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);        
     }
 
     @Override
