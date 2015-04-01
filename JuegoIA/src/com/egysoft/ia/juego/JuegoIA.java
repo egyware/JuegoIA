@@ -9,6 +9,8 @@ import com.badlogic.gdx.assets.AssetManager;
  */
 public class JuegoIA extends Game
 {
+    public static int Width = 800;
+    public static int Height = 480;
     public AssetManager assets;
     
     

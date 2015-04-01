@@ -12,9 +12,10 @@ public class Program
     public static void main(String ...args)
     {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.title = "JuegoIA";
-        config.width = 800;
-        config.height = 480;
+        config.title  = "JuegoIA";
+        config.width  = JuegoIA.Width;
+        config.height = JuegoIA.Height;
+        
         new LwjglApplication(new JuegoIA(), config);
     }
     

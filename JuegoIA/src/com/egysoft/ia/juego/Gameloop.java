@@ -26,7 +26,19 @@ public class Gameloop implements Screen
     {
         juego = j;
         
-        juego.assets.load("assets/main.atlas", TextureAtlas.class);
+        juego.assets.load("assets/game.atlas", TextureAtlas.class);
+        
+        juego.assets.finishLoading();
+        
+        game = new Stage();
+        Player player;
+        for(int i=0; i< 10; i++)
+        {
+            player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+            player.setPosition(100+i*50,100);
+            game.addActor(player);
+        }
+        
     }
 
     @Override
@@ -38,7 +50,10 @@ public class Gameloop implements Screen
     public void render(float delta) 
     {    
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);        
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
+        
+        game.act();
+        game.draw();
     }
 
     @Override
