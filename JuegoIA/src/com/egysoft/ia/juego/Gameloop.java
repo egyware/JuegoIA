@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Gdx;
@@ -15,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  *
- * @author Alumno
+ * @author Edgardo Moreno
  */
 public class Gameloop implements Screen
 {
@@ -23,7 +17,7 @@ public class Gameloop implements Screen
     private final Stage game;
     private final Stage hud;
     private final InputMultiplexer multiplexor;
-    
+    private final Laberinth laberinth;
     public Gameloop(JuegoIA j)
     {
         juego = j;
@@ -41,7 +35,9 @@ public class Gameloop implements Screen
         
         hud = new Stage();
         
-        multiplexor = new InputMultiplexer(hud, game);                
+        multiplexor = new InputMultiplexer(hud, game);
+        
+        this.laberinth = new Laberinth(18,18,64,64);
     }
 
     @Override
