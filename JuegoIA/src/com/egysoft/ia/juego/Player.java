@@ -1,18 +1,25 @@
 package com.egysoft.ia.juego;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
 
 /**
  *
  * @author Alumno
  */
-public class Player extends Actor
+public class Player extends Actor 
 {
     public Animation up;
     public Animation down;
@@ -55,6 +62,25 @@ public class Player extends Actor
         left = new Animation(0.5f, array, Animation.PlayMode.LOOP);
         
         selected = down;
+        
+        addListener(new InputListener()
+        {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode)
+            {
+                  if(Keys.LEFT == keycode) 
+                  {
+                      setX(getX()-1);
+                      return true;
+                  }
+                  if(Keys.RIGHT == keycode) 
+                  {
+                      setX(getX()+1);
+                      return true;
+                  }
+                  return false;
+            }
+        });
     }
     
     @Override
@@ -68,6 +94,10 @@ public class Player extends Actor
     public void draw(Batch batch, float parentAlpha)
     {
        TextureRegion region = selected.getKeyFrame(time);
-       batch.draw(region, getX(), getY());
-    }
+       batch.draw(region, getX(), getY());       
+    }   
+
+    
+    
+    
 }

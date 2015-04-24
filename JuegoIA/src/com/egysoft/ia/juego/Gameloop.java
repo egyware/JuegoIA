@@ -7,6 +7,7 @@
 package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,8 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 public class Gameloop implements Screen
 {
     private final JuegoIA juego;
-    private Stage game;
-    private Stage hud;
+    private final Stage game;
+    private final Stage hud;
+    private final InputMultiplexer multiplexor;
     
     public Gameloop(JuegoIA j)
     {
@@ -32,18 +34,20 @@ public class Gameloop implements Screen
         
         game = new Stage();
         Player player;
-        for(int i=0; i< 10; i++)
-        {
-            player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
-            player.setPosition(100+i*50,100);
-            game.addActor(player);
-        }
+        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+        player.setPosition(150,100);
+        game.addActor(player);
+        game.setKeyboardFocus(player);
         
+        hud = new Stage();
+        
+        multiplexor = new InputMultiplexer(hud, game);                
     }
 
     @Override
     public void show() 
     {    
+        Gdx.input.setInputProcessor(multiplexor);
     }
 
     @Override
@@ -74,6 +78,7 @@ public class Gameloop implements Screen
     @Override
     public void hide() 
     {    
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
