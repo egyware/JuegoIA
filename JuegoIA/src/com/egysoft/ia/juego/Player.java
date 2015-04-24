@@ -1,16 +1,11 @@
 package com.egysoft.ia.juego;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
@@ -19,13 +14,14 @@ import com.badlogic.gdx.utils.Array;
  *
  * @author Alumno
  */
-public class Player extends Actor 
+public class Player extends Actor implements Pieza
 {
-    public Animation up;
-    public Animation down;
-    public Animation left;
-    public Animation right;
-    public Animation selected;
+    private Celda celda;
+    private Animation up;
+    private Animation down;
+    private Animation left;
+    private Animation right;
+    private Animation selected;
     
     private float time;
     
@@ -70,12 +66,22 @@ public class Player extends Actor
             {
                   if(Keys.LEFT == keycode) 
                   {
-                      setX(getX()-1);
+                      setX(getX()-10);
                       return true;
                   }
                   if(Keys.RIGHT == keycode) 
                   {
-                      setX(getX()+1);
+                      setX(getX()+10);
+                      return true;
+                  }
+                  if(Keys.UP == keycode) 
+                  {
+                      setY(getY()+10);
+                      return true;
+                  }
+                  if(Keys.DOWN == keycode) 
+                  {
+                      setY(getY()-10);
                       return true;
                   }
                   return false;
@@ -96,6 +102,18 @@ public class Player extends Actor
        TextureRegion region = selected.getKeyFrame(time);
        batch.draw(region, getX(), getY());       
     }   
+
+    @Override
+    public Celda getCeldaActual()
+    {
+        return celda;
+    }
+
+    @Override
+    public void setCeldaActual(Celda nueva) 
+    {
+        celda = nueva;
+    }
 
     
     

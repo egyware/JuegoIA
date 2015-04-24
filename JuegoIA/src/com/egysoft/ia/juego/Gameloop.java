@@ -17,7 +17,7 @@ public class Gameloop implements Screen
     private final Stage game;
     private final Stage hud;
     private final InputMultiplexer multiplexor;
-    private final Laberinth laberinth;
+    private final LaberintoGrupo laberinth;
     public Gameloop(JuegoIA j)
     {
         juego = j;
@@ -26,18 +26,26 @@ public class Gameloop implements Screen
         
         juego.assets.finishLoading();
         
-        game = new Stage();
-        Player player;
-        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
-        player.setPosition(150,100);
-        game.addActor(player);
-        game.setKeyboardFocus(player);
+        game = new Stage();       
         
         hud = new Stage();
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        this.laberinth = new Laberinth(18,18,64,64);
+        laberinth = new LaberintoGrupo(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        
+        game.addActor(laberinth);
+        
+        //jugadores
+        Player player;
+        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+        player.setPosition(150,100);
+        game.setKeyboardFocus(player);
+        laberinth.addActor(player);        
+        
+        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+        player.setPosition(200,100);
+        laberinth.addActor(player);
     }
 
     @Override
