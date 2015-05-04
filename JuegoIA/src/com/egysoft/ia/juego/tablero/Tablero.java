@@ -90,7 +90,7 @@ public class Tablero extends Group implements ITablero
     @Override
     public Celda getCelda(int i, int j)
     {
-        return grid[j*columns+i];
+        return grid[j*columns+i];        
     }
 
 	@Override
@@ -102,5 +102,5 @@ public class Tablero extends Group implements ITablero
 	public void setPausa(boolean pause)
 	{
 		pausa = pause;		
-	}	
+	}
 }

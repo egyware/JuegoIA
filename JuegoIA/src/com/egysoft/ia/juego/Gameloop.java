@@ -7,10 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -18,9 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.tablero.Tablero;
 
@@ -34,7 +30,7 @@ public class Gameloop implements Screen
     private final Stage game;
     private final Stage hud;    
     private final InputMultiplexer multiplexor;
-    private final Tablero laberinth;
+    private final Tablero tablero;
     
     private ShaderProgram grayShader;
     private ShaderProgram basicShader;
@@ -61,20 +57,20 @@ public class Gameloop implements Screen
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        laberinth = new Tablero(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        tablero = new Tablero(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
         
-        game.addActor(laberinth);
+        game.addActor(tablero);
         
         //jugadores
         Player player;
         player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
         player.setPosition(150,100);
         game.setKeyboardFocus(player);
-        laberinth.addActor(player);        
+        tablero.addActor(player);        
         
         player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
         player.setPosition(200,100);
-        laberinth.addActor(player);
+        tablero.addActor(player);
     }
 
     private void setGUI() 
@@ -98,8 +94,11 @@ public class Gameloop implements Screen
 				Slider iaSlider = new Slider(0,10,1, false, skin);
 				TextButton ok = new TextButton("Aceptar", skin);
 				
-				musicSlider.setValue(10);
-				iaSlider.setValue(5);
+				musicSlider.setValue(getMusicVolume());
+				musicBox.setChecked(getMusicVolume()<=0);
+				iaSlider.setValue(getIntelligence());
+				debugBox.setChecked(getDebug());				
+				
 				musicBox.addListener(new ChangeListener()
 				{
 					private float lastValue = musicSlider.getValue();
@@ -135,6 +134,14 @@ public class Gameloop implements Screen
 					public void changed(ChangeEvent arg0, Actor arg1) 
 					{
 						setMusicVolume(musicSlider.getValue());
+					}					
+				});
+				iaSlider.addListener(new ChangeListener()
+				{
+					@Override
+					public void changed(ChangeEvent arg0, Actor arg1) 
+					{
+						setIntelligence(iaSlider.getValue());						
 					}					
 				});
 				
@@ -219,14 +226,31 @@ public class Gameloop implements Screen
     }
     
     
+    public boolean getDebug()
+    {
+    	return tablero.getDebug();
+    }
     public void setDebug(boolean b)
     {
-    	laberinth.setDebug(b);
+    	tablero.setDebug(b);
+    }
+    
+    public float getMusicVolume()
+    {
+    	return 10;
     }
     public void setMusicVolume(float value)
-    {
-    	
+    {    	
     }
+    
+    public float getIntelligence()
+    {
+    	return 5;
+    }
+    public void setIntelligence(float f)
+    {    	
+    }
+    
     public void setPause(boolean pause)
     {
     	final Batch batch = game.getBatch();
@@ -238,7 +262,7 @@ public class Gameloop implements Screen
     	{
     		batch.setShader(basicShader);	
     	}
-    	laberinth.setPausa(pause);
+    	tablero.setPausa(pause);
     	
     }
 }
