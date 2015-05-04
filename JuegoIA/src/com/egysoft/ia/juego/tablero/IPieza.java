@@ -1,4 +1,4 @@
-package com.egysoft.ia.juego;
+package com.egysoft.ia.juego.tablero;
 
 /**
  * Interface que expone las funciones necesarias para comportarse como una pieza.

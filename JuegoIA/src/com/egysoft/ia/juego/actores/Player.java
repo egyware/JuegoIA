@@ -9,8 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
-import com.egysoft.ia.juego.Celda;
-import com.egysoft.ia.juego.IPieza;
+import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.Pieza;
 
 /**
  *

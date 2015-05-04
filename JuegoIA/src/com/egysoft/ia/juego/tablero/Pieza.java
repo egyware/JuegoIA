@@ -1,8 +1,6 @@
-package com.egysoft.ia.juego.actores;
+package com.egysoft.ia.juego.tablero;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.egysoft.ia.juego.Celda;
-import com.egysoft.ia.juego.IPieza;
 
 /**
  * Esta clase es la base de todas las piezas del tabler,

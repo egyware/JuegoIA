@@ -1,7 +1,10 @@
 package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 /**
  *
@@ -18,6 +21,8 @@ public class JuegoIA extends Game
     public void create() 
     {
         assets = new AssetManager();
+        final InternalFileHandleResolver fileResolver = new InternalFileHandleResolver();
+        assets.setLoader(ShaderProgram.class, new ShaderLoader(fileResolver));
         
         
         setScreen(new Gameloop(this));

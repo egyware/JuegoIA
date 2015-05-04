@@ -4,9 +4,25 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.egysoft.ia.juego.actores.Player;
+import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
  *
@@ -16,20 +32,32 @@ public class Gameloop implements Screen
 {
     private final JuegoIA juego;
     private final Stage game;
-    private final Stage hud;
+    private final Stage hud;    
     private final InputMultiplexer multiplexor;
     private final Tablero laberinth;
+    
+    private ShaderProgram grayShader;
+    private ShaderProgram basicShader;
+    
     public Gameloop(JuegoIA j)
     {
         juego = j;
         
         juego.assets.load("assets/game.atlas", TextureAtlas.class);
+        juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
+        juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
+        juego.assets.load("assets/uiskin.json", Skin.class);
         
         juego.assets.finishLoading();
         
-        game = new Stage();       
+        grayShader  = juego.assets.get("assets/shaders/gray.shader");
+        basicShader = juego.assets.get("assets/shaders/basic.shader");
         
+        game = new Stage();        
         hud = new Stage();
+        game.getBatch().setShader(basicShader);
+        
+        setGUI();
         
         multiplexor = new InputMultiplexer(hud, game);
         
@@ -49,7 +77,99 @@ public class Gameloop implements Screen
         laberinth.addActor(player);
     }
 
-    @Override
+    private void setGUI() 
+    {
+    	final Skin skin = juego.assets.get("assets/uiskin.json");
+    	final Table table = new Table();
+    	table.setFillParent(true);    	
+    	hud.addActor(table);
+    	
+        final TextButton opciones = new TextButton("opciones",skin);
+        opciones.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{				
+				setPause(true);
+				final Dialog dialog = new Dialog("Opciones", skin);
+				CheckBox musicBox = new CheckBox("", skin);
+				CheckBox debugBox = new CheckBox("", skin);
+				Slider musicSlider = new Slider(0,10,1,false, skin);				
+				Slider iaSlider = new Slider(0,10,1, false, skin);
+				TextButton ok = new TextButton("Aceptar", skin);
+				
+				musicSlider.setValue(10);
+				iaSlider.setValue(5);
+				musicBox.addListener(new ChangeListener()
+				{
+					private float lastValue = musicSlider.getValue();
+					@Override
+					public void changed(ChangeEvent event, Actor source) 
+					{
+						if(musicBox.isChecked())
+						{
+							lastValue = musicSlider.getValue();
+							musicSlider.setValue(0);
+							musicSlider.setDisabled(true);
+						}
+						else
+						{
+							musicSlider.setValue(lastValue);
+							musicSlider.setDisabled(false);
+						}
+					}					
+				});
+				
+				debugBox.addListener(new ChangeListener()
+				{
+					@Override
+					public void changed(ChangeEvent event, Actor source) 
+					{					
+						setDebug(debugBox.isChecked());
+					}					
+				});
+				
+				musicSlider.addListener(new ChangeListener()
+				{
+					@Override
+					public void changed(ChangeEvent arg0, Actor arg1) 
+					{
+						setMusicVolume(musicSlider.getValue());
+					}					
+				});
+				
+				ok.addListener(new ChangeListener()
+				{
+					@Override
+					public void changed(ChangeEvent arg0, Actor arg1) 
+					{
+						dialog.hide();
+						setPause(false);
+					}					
+				});
+				
+				dialog.row();
+				dialog.add(new Label("Musica",skin)).left();
+				dialog.add(musicBox);
+				dialog.add(musicSlider).right();
+				dialog.row();
+				dialog.add(new Label("Inteligencia",skin)).left();
+				dialog.add(iaSlider).colspan(2).left().fill();
+				dialog.row();
+				dialog.add(new Label("Debug",skin)).left();
+				dialog.add(debugBox).colspan(2).left();
+				dialog.row();
+				dialog.add(ok).colspan(3).center();
+				
+				dialog.show(hud);
+			}        	
+        });
+        
+        table.row().expand();
+        table.add(opciones).right().top();        
+	}
+
+	@Override
     public void show() 
     {    
         Gdx.input.setInputProcessor(multiplexor);
@@ -61,13 +181,18 @@ public class Gameloop implements Screen
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         
+        //game.getBatch().setShader(juego.assets.get("assets/shaders/gray.shader"));
         game.act();
+        hud.act();
         game.draw();
+        hud.draw();        
     }
 
     @Override
     public void resize(int w, int h) 
-    {    
+    {
+    	game.getViewport().update(w, h);
+    	hud.getViewport().update(w, h);    	
     }
 
     @Override
@@ -89,6 +214,31 @@ public class Gameloop implements Screen
     @Override
     public void dispose() 
     {    
+    	game.dispose();
+    	hud.dispose();
     }
     
+    
+    public void setDebug(boolean b)
+    {
+    	laberinth.setDebug(b);
+    }
+    public void setMusicVolume(float value)
+    {
+    	
+    }
+    public void setPause(boolean pause)
+    {
+    	final Batch batch = game.getBatch();
+    	if(pause)
+    	{
+    		batch.setShader(grayShader);
+    	}
+    	else
+    	{
+    		batch.setShader(basicShader);	
+    	}
+    	laberinth.setPausa(pause);
+    	
+    }
 }

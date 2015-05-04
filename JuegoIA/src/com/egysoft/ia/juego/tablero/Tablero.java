@@ -1,8 +1,9 @@
-package com.egysoft.ia.juego;
+package com.egysoft.ia.juego.tablero;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.SnapshotArray;
+
 import java.util.Comparator;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Comparator;
 public class Tablero extends Group implements ITablero
 {
     private boolean debug;
+    private boolean pausa;
     public static class ActorComparator implements Comparator<Actor> 
     {
         @Override
@@ -48,48 +50,41 @@ public class Tablero extends Group implements ITablero
     @Override
     public void addActor(Actor actor)
     {
-	if(actor instanceof IPieza)
-	{
-	    final IPieza p = (IPieza)actor;
-	    int ci = (int) actor.getX()/boxWidth, cj = (int) actor.getY()/boxHeight;
-	    Celda nueva = grid[cj*columns+ci];
-	    nueva.setPiezaActual(p);
-	    p.setCeldaActual(nueva);
-	}
-	super.addActor(actor);
+		if(actor instanceof IPieza)
+		{
+		    final IPieza p = (IPieza)actor;
+		    int ci = (int) actor.getX()/boxWidth, cj = (int) actor.getY()/boxHeight;
+		    Celda nueva = grid[cj*columns+ci];
+		    nueva.setPiezaActual(p);
+		    p.setCeldaActual(nueva);
+		}
+		super.addActor(actor);
     }
    
     @Override
     public void act(float delta)
     {
-	if(debug)
-	{
-	    for(int j=0;j<rows;j++)
-	    {
-		for(int i=0;i<columns;i++)
-		{
-		    
-		}
-	    }
-	}
-        getChildren().sort(comparator);
-        SnapshotArray<Actor> snapshotArray = getChildren();
-        Actor childrens[] = snapshotArray.begin();
-        for(Actor c:childrens) 
-        {
-            if(c instanceof IPieza)
-            {
-                final IPieza p = (IPieza)c;
-                int ci = (int) c.getX()/boxWidth, cj = (int) c.getY()/boxHeight;
-                Celda celdaActual = p.getCeldaActual();
-                celdaActual.setPiezaActual(null);
-                Celda nueva = grid[cj*columns+ci];
-                nueva.setPiezaActual(p);
-                p.setCeldaActual(nueva);
-            }
-        }        
-        snapshotArray.end();
-        super.act(delta);
+    	if(!pausa)
+    	{    		
+			getChildren().sort(comparator);
+		    SnapshotArray<Actor> snapshotArray = getChildren();
+		    Actor childrens[] = snapshotArray.begin();
+		    for(Actor c:childrens) 
+		    {
+		        if(c instanceof IPieza)
+		        {
+		            final IPieza p = (IPieza)c;
+		            int ci = (int) c.getX()/boxWidth, cj = (int) c.getY()/boxHeight;
+		            Celda celdaActual = p.getCeldaActual();
+		            celdaActual.setPiezaActual(null);
+		            Celda nueva = grid[cj*columns+ci];
+		            nueva.setPiezaActual(p);
+		            p.setCeldaActual(nueva);
+		        }
+		    }        
+		    snapshotArray.end();
+		    super.act(delta);
+    	}
     }
     
     @Override
@@ -103,4 +98,9 @@ public class Tablero extends Group implements ITablero
 	{
 		return grid[j*columns+i].Disponible();
 	}
+
+	public void setPausa(boolean pause)
+	{
+		pausa = pause;		
+	}	
 }
