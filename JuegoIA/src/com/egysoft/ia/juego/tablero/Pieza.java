@@ -24,6 +24,5 @@ public abstract class Pieza extends Actor implements IPieza
 	public final void setCeldaActual(Celda nueva) 
 	{
 		celda = nueva;
-	}
-
+	}	
 }

@@ -26,6 +26,7 @@ import com.egysoft.ia.juego.tablero.Tablero;
  */
 public class Gameloop implements Screen
 {
+	private boolean debug;
     private final JuegoIA juego;
     private final Stage game;
     private final Stage hud;    
@@ -53,11 +54,12 @@ public class Gameloop implements Screen
         hud = new Stage();
         game.getBatch().setShader(basicShader);
         
-        setGUI();
+        final Skin skin = juego.assets.get("assets/uiskin.json");
+        setGUI(skin);
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        tablero = new Tablero(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        tablero = new Tablero(skin.getFont("default-font"),18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
         
         game.addActor(tablero);
         
@@ -73,9 +75,8 @@ public class Gameloop implements Screen
         tablero.addActor(player);
     }
 
-    private void setGUI() 
+    private void setGUI(final Skin skin) 
     {
-    	final Skin skin = juego.assets.get("assets/uiskin.json");
     	final Table table = new Table();
     	table.setFillParent(true);    	
     	hud.addActor(table);
@@ -188,7 +189,10 @@ public class Gameloop implements Screen
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         
-        //game.getBatch().setShader(juego.assets.get("assets/shaders/gray.shader"));
+        if(debug)
+        {
+        	tablero.drawDebugTablero();
+        }
         game.act();
         hud.act();
         game.draw();
@@ -228,11 +232,12 @@ public class Gameloop implements Screen
     
     public boolean getDebug()
     {
-    	return tablero.getDebug();
+    	return debug;
     }
     public void setDebug(boolean b)
     {
-    	tablero.setDebug(b);
+    	debug = b;
+    	tablero.setGameDebug(b);
     }
     
     public float getMusicVolume()

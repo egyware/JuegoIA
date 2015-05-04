@@ -1,7 +1,13 @@
 package com.egysoft.ia.juego.tablero;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
 
 import java.util.Comparator;
@@ -10,7 +16,7 @@ import java.util.Comparator;
  * Esta clase esta basada en Libfdx/Group, sin embargo en vez de usar un SnapshotArray utilza un grid. 
  * @author Edgardo
  */
-public class Tablero extends Group implements ITablero
+public class Tablero extends Group implements ITablero, Disposable
 {
     private boolean debug;
     private boolean pausa;
@@ -30,8 +36,10 @@ public class Tablero extends Group implements ITablero
     public final int rows; 
     private final Celda grid[];
     private final ActorComparator comparator = new ActorComparator();
+    private final BitmapFont font;
+    private ShapeRenderer shapeRenderer;
         
-    public Tablero(final int c, final int r,final int bw, final int hw)
+    public Tablero(BitmapFont f, final int c, final int r,final int bw, final int hw)
     {
         boxWidth = bw;
         boxHeight = hw;
@@ -45,6 +53,7 @@ public class Tablero extends Group implements ITablero
                 grid[j*columns+i] = new Celda(this, i,j);
             }
         }	
+        font = f;
     }
         
     @Override
@@ -87,6 +96,49 @@ public class Tablero extends Group implements ITablero
     	}
     }
     
+    public void drawDebugTablero()
+    {
+    	shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setColor(Color.GREEN);    		
+		for(int j=0;j<rows;j++)
+		{
+			for(int i=0;i<columns;i++)
+			{
+				shapeRenderer.line(i*boxWidth,j*boxHeight, i*boxWidth, (j+0.25f)*boxHeight);   				
+				shapeRenderer.line(i*boxWidth,j*boxHeight, (i+0.25f)*boxWidth, j*boxHeight);
+				
+				shapeRenderer.line(i*boxWidth,(j+1)*boxHeight, (i-0.25f)*boxWidth, (j+1)*boxHeight);
+				shapeRenderer.line((i+1)*boxWidth,j*boxHeight, (i+1)*boxWidth, (j-0.25f)*boxHeight);
+			}
+		}
+		shapeRenderer.end();
+    }
+    
+    public void draw(Batch batch, float parentAlfa)
+    {    	
+    	if(debug)
+    	{
+    		super.draw(batch, parentAlfa);
+    		SnapshotArray<Actor> snapshotArray = getChildren();
+		    Actor childrens[] = snapshotArray.begin();
+    		for(Actor c:childrens) 
+  		    {
+  		        if(c instanceof IPieza)
+  		        {
+  		        	Celda celda = ((IPieza)c).getCeldaActual();
+  		        	float x = c.getX(), y = c.getY();  		        	
+  		        	font.draw(batch, String.format("%s(%.0f,%.0f)", c.toString(),x,y), x, y);  		        	
+  		        	font.draw(batch, String.format("Celda(%d,%d)",celda.i, celda.j), x, y-18);
+  		        }
+  		    }
+    		snapshotArray.end();   	
+    	}
+    	else
+    	{
+    		super.draw(batch, parentAlfa);
+    	}
+    }
+    
     @Override
     public Celda getCelda(int i, int j)
     {
@@ -103,4 +155,28 @@ public class Tablero extends Group implements ITablero
 	{
 		pausa = pause;		
 	}
+
+	public boolean getGameDebug()
+	{		
+		return debug;
+	}
+
+	public void setGameDebug(boolean b)
+	{
+		debug = b;	
+		if(debug && shapeRenderer == null)
+		{
+			shapeRenderer = new ShapeRenderer();
+		}
+	}
+
+	@Override
+	public void dispose() 
+	{
+		if(shapeRenderer !=  null)
+		{
+			shapeRenderer.dispose();
+			shapeRenderer = null; 
+		}		
+	}	
 }

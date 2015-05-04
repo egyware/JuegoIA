@@ -103,6 +103,5 @@ public class Player extends Pieza
     {
        TextureRegion region = selected.getKeyFrame(time);
        batch.draw(region, getX(), getY());       
-    }   
-    
+    }
 }
