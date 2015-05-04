@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.egysoft.ia.juego.actores.Player;
 
 /**
  *
@@ -17,7 +18,7 @@ public class Gameloop implements Screen
     private final Stage game;
     private final Stage hud;
     private final InputMultiplexer multiplexor;
-    private final LaberintoGrupo laberinth;
+    private final Tablero laberinth;
     public Gameloop(JuegoIA j)
     {
         juego = j;
@@ -32,7 +33,7 @@ public class Gameloop implements Screen
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        laberinth = new LaberintoGrupo(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        laberinth = new Tablero(18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
         
         game.addActor(laberinth);
         

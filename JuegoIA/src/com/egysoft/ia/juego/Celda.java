@@ -6,10 +6,10 @@ package com.egysoft.ia.juego;
  */
 public class Celda 
 {
-    public final Laberinto l;    
+    public final ITablero l;    
     public final int i;
     public final int j;
-    private Pieza pieza;
+    private IPieza pieza;
     
     /**
      *
@@ -17,18 +17,18 @@ public class Celda
      * @param _i
      * @param _j
      */
-    public Celda(Laberinto _l, int _i, int _j)    
+    public Celda(ITablero _l, int _i, int _j)    
     {
         l = _l;
         i = _i;
         j = _j;
     }
 
-    public Pieza getPiezaActual()
+    public IPieza getPiezaActual()
     {
         return pieza;
     }
-    public void setPiezaActual(Pieza p)
+    public void setPiezaActual(IPieza p)
     {
         pieza = p;
     }
