@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Obstaculo;
 import com.egysoft.ia.juego.actores.Player;
@@ -80,6 +81,15 @@ public class Gameloop implements Screen
         o = new Obstaculo("violet_wall", atlas);
         o.setPosition(32*5,32*8);
         tablero.addActor(o);
+        
+        Cube c;
+        c = new Cube("cube", atlas);
+        c.setPosition(32*4, 32*8);
+        tablero.addActor(c);
+        c = new Cube("cube", atlas);
+        c.setPosition(32*4, 32*9);
+        tablero.addActor(c);
+        
         
         
         Lair l;
