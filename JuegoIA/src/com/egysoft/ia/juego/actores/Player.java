@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -35,28 +36,33 @@ public class Player extends Pieza
         array.add(null);
         array.add(null);
         
-        array.set(0, atlas.findRegion(assetName,0));
-        array.set(1, atlas.findRegion(assetName,1));
-        array.set(2, atlas.findRegion(assetName,2));
-        array.set(3, atlas.findRegion(assetName,1));
+        Array<AtlasRegion> regions;
+        regions = atlas.findRegions(String.format("%s_espalda", assetName));
+        array.set(0, regions.get(0));
+        array.set(1, regions.get(1));
+        array.set(2, regions.get(0));
+        array.set(3, regions.get(2));
         up = new Animation(0.5f, array, Animation.PlayMode.LOOP);
         
-        array.set(0, atlas.findRegion(assetName,3));
-        array.set(1, atlas.findRegion(assetName,4));
-        array.set(2, atlas.findRegion(assetName,5));
-        array.set(3, atlas.findRegion(assetName,4));
+        regions = atlas.findRegions(String.format("%s_derecha", assetName));
+        array.set(0, regions.get(0));
+        array.set(1, regions.get(1));
+        array.set(2, regions.get(0));
+        array.set(3, regions.get(2));
         right = new Animation(0.5f, array, Animation.PlayMode.LOOP);
         
-        array.set(0, atlas.findRegion(assetName,6));
-        array.set(1, atlas.findRegion(assetName,7));
-        array.set(2, atlas.findRegion(assetName,8));        
-        array.set(3, atlas.findRegion(assetName,7));
+        regions = atlas.findRegions(String.format("%s_frente", assetName));
+        array.set(0, regions.get(0));
+        array.set(1, regions.get(1));
+        array.set(2, regions.get(0));
+        array.set(3, regions.get(2));
         down = new Animation(0.5f, array, Animation.PlayMode.LOOP);
         
-        array.set(0, atlas.findRegion(assetName,9));
-        array.set(1, atlas.findRegion(assetName,10));
-        array.set(2, atlas.findRegion(assetName,11));
-        array.set(3, atlas.findRegion(assetName,10));
+        regions = atlas.findRegions(String.format("%s_izquierda", assetName));
+        array.set(0, regions.get(0));
+        array.set(1, regions.get(1));
+        array.set(2, regions.get(0));
+        array.set(3, regions.get(2));
         left = new Animation(0.5f, array, Animation.PlayMode.LOOP);
         
         selected = down;

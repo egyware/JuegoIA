@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.egysoft.ia.juego.actores.Lair;
+import com.egysoft.ia.juego.actores.Obstaculo;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.tablero.Tablero;
 
@@ -55,22 +57,48 @@ public class Gameloop implements Screen
         game.getBatch().setShader(basicShader);
         
         final Skin skin = juego.assets.get("assets/uiskin.json");
+        final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
         setGUI(skin);
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        tablero = new Tablero(skin.getFont("default-font"),18,18,64,64); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        tablero = new Tablero(atlas, skin.getFont("default-font"),18,18,32,32); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
         
         game.addActor(tablero);
         
         //jugadores
+        Obstaculo o;
+        o = new Obstaculo("violet_wall", atlas);
+        o.setPosition(32*5,32*6);
+        tablero.addActor(o);
+        o = new Obstaculo("sand_wall", atlas);
+        o.setPosition(32*6,32*6);
+        tablero.addActor(o);
+        o = new Obstaculo("violet_wall", atlas);
+        o.setPosition(32*7,32*6);
+        tablero.addActor(o);
+        o = new Obstaculo("violet_wall", atlas);
+        o.setPosition(32*5,32*8);
+        tablero.addActor(o);
+        
+        
+        Lair l;
+        l = new Lair("blue_lair", atlas);
+        l.setPosition(32*2, 32*2);
+        tablero.addActor(l);
+        
+        l = new Lair("red_lair", atlas);
+        l.setPosition(32*4, 32*2);
+        tablero.addActor(l);
+        
+        
         Player player;
-        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+        player = new Player("jasper", atlas);
         player.setPosition(150,100);
         game.setKeyboardFocus(player);
         tablero.addActor(player);        
         
-        player = new Player("mage", (TextureAtlas)juego.assets.get("assets/game.atlas"));
+        player = new Player("jasper", atlas);
         player.setPosition(200,100);
         tablero.addActor(player);
     }
@@ -189,10 +217,6 @@ public class Gameloop implements Screen
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         
-        if(debug)
-        {
-        	tablero.drawDebugTablero();
-        }
         game.act();
         hud.act();
         game.draw();

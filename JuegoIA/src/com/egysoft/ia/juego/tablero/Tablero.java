@@ -3,12 +3,17 @@ package com.egysoft.ia.juego.tablero;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.egysoft.ia.juego.Player;
+import com.egysoft.ia.juego.actores.Obstaculo;
 
 import java.util.Comparator;
 
@@ -16,7 +21,7 @@ import java.util.Comparator;
  * Esta clase esta basada en Libfdx/Group, sin embargo en vez de usar un SnapshotArray utilza un grid. 
  * @author Edgardo
  */
-public class Tablero extends Group implements ITablero, Disposable
+public class Tablero extends Group implements ITablero
 {
     private boolean debug;
     private boolean pausa;
@@ -37,11 +42,12 @@ public class Tablero extends Group implements ITablero, Disposable
     private final Celda grid[];
     private final ActorComparator comparator = new ActorComparator();
     private final BitmapFont font;
-    private ShapeRenderer shapeRenderer;
+    private final TextureRegion box;
+    private final Array<TextureAtlas.AtlasRegion> digits;
         
-    public Tablero(BitmapFont f, final int c, final int r,final int bw, final int hw)
+    public Tablero(TextureAtlas atlas, BitmapFont f, final int c, final int r,final int bw, final int hw)
     {
-        boxWidth = bw;
+    	boxWidth = bw;
         boxHeight = hw;
         columns = c;
         rows = r;
@@ -54,6 +60,8 @@ public class Tablero extends Group implements ITablero, Disposable
             }
         }	
         font = f;
+        box = atlas.findRegion("box");
+        digits = atlas.findRegions("digit");
     }
         
     @Override
@@ -96,22 +104,24 @@ public class Tablero extends Group implements ITablero, Disposable
     	}
     }
     
-    public void drawDebugTablero()
+    private void drawDebugTablero(Batch batch)
     {
-    	shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setColor(Color.GREEN);    		
-		for(int j=0;j<rows;j++)
+    	for(int j=0;j<rows;j++)
 		{
 			for(int i=0;i<columns;i++)
 			{
-				shapeRenderer.line(i*boxWidth,j*boxHeight, i*boxWidth, (j+0.25f)*boxHeight);   				
-				shapeRenderer.line(i*boxWidth,j*boxHeight, (i+0.25f)*boxWidth, j*boxHeight);
-				
-				shapeRenderer.line(i*boxWidth,(j+1)*boxHeight, (i-0.25f)*boxWidth, (j+1)*boxHeight);
-				shapeRenderer.line((i+1)*boxWidth,j*boxHeight, (i+1)*boxWidth, (j-0.25f)*boxHeight);
-			}
-		}
-		shapeRenderer.end();
+				int x = i*boxWidth, y = j*boxHeight;
+				batch.draw(box, x, y);
+				String text = String.format("%d %d", i, j);
+				x-=2;y+=2;
+				for(char c:text.toCharArray())
+				{
+					x+=4;
+					if(c==' ') continue;					
+					batch.draw(digits.get(c-'0'),x,y);					
+				}
+			}			
+		}		
     }
     
     public void draw(Batch batch, float parentAlfa)
@@ -119,16 +129,17 @@ public class Tablero extends Group implements ITablero, Disposable
     	if(debug)
     	{
     		super.draw(batch, parentAlfa);
+    		drawDebugTablero(batch);    		
     		SnapshotArray<Actor> snapshotArray = getChildren();
 		    Actor childrens[] = snapshotArray.begin();
     		for(Actor c:childrens) 
   		    {
-  		        if(c instanceof IPieza)
-  		        {
-  		        	Celda celda = ((IPieza)c).getCeldaActual();
-  		        	float x = c.getX(), y = c.getY();  		        	
-  		        	font.draw(batch, String.format("%s(%.0f,%.0f)", c.toString(),x,y), x, y);  		        	
-  		        	font.draw(batch, String.format("Celda(%d,%d)",celda.i, celda.j), x, y-18);
+  		        if(c instanceof IPieza && !(c instanceof Obstaculo))
+  		        {  		        	
+	        		Celda celda = ((IPieza)c).getCeldaActual();
+	        		float x = c.getX(), y = c.getY();  		        	
+	        		font.draw(batch, String.format("%s(%.0f,%.0f)", c.toString(),x,y), x, y);  		        	
+	        		font.draw(batch, String.format("Celda(%d,%d)",celda.i, celda.j), x, y-18);  		        	
   		        }
   		    }
     		snapshotArray.end();   	
@@ -164,19 +175,5 @@ public class Tablero extends Group implements ITablero, Disposable
 	public void setGameDebug(boolean b)
 	{
 		debug = b;	
-		if(debug && shapeRenderer == null)
-		{
-			shapeRenderer = new ShapeRenderer();
-		}
 	}
-
-	@Override
-	public void dispose() 
-	{
-		if(shapeRenderer !=  null)
-		{
-			shapeRenderer.dispose();
-			shapeRenderer = null; 
-		}		
-	}	
 }
