@@ -21,6 +21,7 @@ import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Obstaculo;
 import com.egysoft.ia.juego.actores.Player;
+import com.egysoft.ia.juego.tablero.Enemy;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -90,6 +91,11 @@ public class Gameloop implements Screen
         c.setPosition(32*4, 32*9);
         tablero.addActor(c);
         
+        
+        Enemy e;
+        e = new Enemy("rafese", atlas);
+        e.setPosition(32*10, 32*2);
+        tablero.addActor(e);
         
         
         Lair l;
