@@ -24,8 +24,11 @@ public interface ITablero
 	int boxWidth();
 	int boxHeight();	
 	int rows();
-	int columns();
-	void gameEnd();
+	int columns();	
+	void addRecompensa(int i);
+	int getTotalRecompensas();
+	int getRecompensas();
+	void gameEnd(String t);
 	
     
 }

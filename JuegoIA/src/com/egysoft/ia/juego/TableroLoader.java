@@ -38,6 +38,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		final Scanner scan = new Scanner(fileHandle.read());		
 		int columns = scan.nextInt();
 		int rows = scan.nextInt();
+		int recompensas = 0;
 		scan.nextLine();
 		
 		tablero = new Tablero(assets, columns, rows, 32,32);
@@ -69,6 +70,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 						Cube cube = new Cube("cube", atlas, cha_ching);
 						cube.setPosition(32*(i+0.25f), 32*(j+0.25f));
 						tablero.addActor(cube);
+						recompensas += 1;
 					}
 					break;
 					case 'l':
@@ -88,6 +90,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		}
 		
 		scan.close();
+		tablero.setTotalRecompensas(recompensas);
 		
 		return tablero;
 	}

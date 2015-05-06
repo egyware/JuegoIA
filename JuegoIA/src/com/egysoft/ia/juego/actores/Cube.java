@@ -43,9 +43,9 @@ public class Cube extends Pieza
 		final ITablero t = celda.t;
 		if(!celda.Disponible(Lair.class,k,m))
 		{
-			isPushing = true;
 			//una guarida, en realidad tengo demasiado sueño para exaltarme x'D
 			//bueno el cubo deberia desaparecer
+			isPushing = true;
 			sound.play(Config.instance.getVolume());
 			addAction(Actions.sequence
 			(
@@ -53,9 +53,23 @@ public class Cube extends Pieza
 					(
 						Actions.fadeOut(0.5f),
 						Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(),0.5f)
-					),					
-					Actions.removeActor()
-			));
+					),
+					new Action()
+					{
+						@Override
+						public boolean act(float arg0) 
+						{
+							t.addRecompensa(1);	
+							if(t.getRecompensas() >= t.getTotalRecompensas())
+						    {
+								t.gameEnd("Coleccionador: Ganaste");
+						    }
+							return true;
+						}
+						
+					},
+					Actions.removeActor()					
+			));			
 			return true;			
 		}else
 		if(!celda.Disponible(Cube.class,k,m))

@@ -91,13 +91,16 @@ public class Gameloop implements Screen
         }
     }
 
+    private Label recompensas;
     private void setGUI() 
     {
     	final Skin skin = juego.assets.get("assets/uiskin.json");
+    	
     	final Table table = new Table();
     	table.setFillParent(true);    	
     	hud.addActor(table);
     	
+    	recompensas = new Label("", skin);
         final TextButton opciones = new TextButton("Opciones",skin);
         final TextButton salir = new TextButton("Salir",skin);
         
@@ -202,9 +205,10 @@ public class Gameloop implements Screen
 		});
         
         table.row().expand();
+        table.add(recompensas).left().top();
         table.add(opciones).right().top();        
         table.row().expand();
-        table.add(salir).right().bottom();
+        table.add(salir).right().colspan(2).bottom();
         
 	}
 
@@ -220,11 +224,14 @@ public class Gameloop implements Screen
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         
+        
+        int r = tablero.getTotalRecompensas()-tablero.getRecompensas();
+        recompensas.setText(String.format("Recompensas restantes: %d", r));
         controller.update(delta);
         game.act();        
         hud.act();
         game.draw();
-        hud.draw();        
+        hud.draw();
     }
 
     @Override
@@ -285,10 +292,10 @@ public class Gameloop implements Screen
     	
     }
     
-    public void gameEnd()
+    public void gameEnd(String texto)
     {
     	final Skin skin = juego.assets.get("assets/uiskin.json");
-    	final Dialog dialog = new Dialog("Fin del juego", skin);
+    	final Dialog dialog = new Dialog(texto, skin);
     	TextButton ok = new TextButton("Aceptar", skin);
     	dialog.row();
 		dialog.add(ok).colspan(3).center();

@@ -84,6 +84,20 @@ public class Tablero extends Group implements ITablero
 		}
 		super.addActor(actor);
     }
+    @Override
+    public boolean removeActor(Actor actor)
+    {
+    	if(super.removeActor(actor))
+    	{
+    		if(actor instanceof IPieza)
+    		{
+    			final IPieza p = (IPieza)actor;
+    			p.getCeldaActual().setPiezaActual(null);    			    
+    		}
+    		return true;
+    	}
+    	return false;
+    }
    
     @Override
     public void act(float delta)
@@ -107,7 +121,7 @@ public class Tablero extends Group implements ITablero
 		            p.setCeldaActual(nueva);		        
 		        }		        
 		    }        
-		    snapshotArray.end();		    
+		    snapshotArray.end();		   
     	}
     }
     
@@ -232,6 +246,8 @@ public class Tablero extends Group implements ITablero
 	}
 
 	private Gameloop gameloop;
+	private int recompensas;
+	private int totalRecompensas;
 	public void setGameloop(Gameloop gameloop) 
 	{	
 		this.gameloop = gameloop;
@@ -242,9 +258,10 @@ public class Tablero extends Group implements ITablero
 	}
 
 	@Override
-	public void gameEnd() 
+	public void gameEnd(String t) 
 	{
-		gameloop.gameEnd();		
+		pausa = true;
+		gameloop.gameEnd(t);		
 	}
 
 	public void setInitialPosition(int xi, int yi) 
@@ -252,4 +269,28 @@ public class Tablero extends Group implements ITablero
 		this.xi = xi;
 		this.yi = yi;
 	}
+
+	public void setTotalRecompensas(int t)
+	{
+		totalRecompensas = t;
+	}
+	
+	@Override
+	public void addRecompensa(int i) 
+	{
+		recompensas += i;		
+	}
+	
+	@Override
+	public int getRecompensas()
+	{
+		return recompensas;
+	}
+	
+	@Override
+	public int getTotalRecompensas() 
+	{
+		return totalRecompensas;
+	}
+	
 }

@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
-import com.egysoft.ia.juego.Gameloop;
 import com.egysoft.ia.juego.State;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.ITablero;
@@ -487,7 +486,7 @@ public class Player extends Pieza
 				@Override
 				public boolean act(float arg0) 
 				{
-					getCeldaActual().t.gameEnd();
+					getCeldaActual().t.gameEnd("Cazado: Fin del juego");
 					return true;
 				}
 			}			
