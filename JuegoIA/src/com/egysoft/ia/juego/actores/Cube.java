@@ -27,9 +27,9 @@ public class Cube extends Pieza
 		batch.draw(texture, getX(), getY());
 	}
 
-	public void push(Pieza pieza, int k, int m)
+	public boolean push(Pieza pieza, int k, int m)
 	{
-		if(isPushing) return;
+		if(isPushing) return true;
 		final Celda celda = getCeldaActual();
 		final ITablero t = celda.t;
 		if(!celda.Disponible(Cube.class,k,m))
@@ -37,25 +37,31 @@ public class Cube extends Pieza
 			//otro cubo o.o!!!
 			final Celda otra = celda.t.getCelda(celda.i+k, celda.j+m);
 			final Cube otro = (Cube) otra.getPiezaActual();
-			otro.push(this,k, m);
-			return;
-		}
+			if(otro.push(this,k, m)) return true;			
+			else 
+			{
+				if(pieza instanceof Player) //nop, no está isdisponible
+				{
+					final Player p = (Player)pieza;
+					p.push(this, k, m);
+					isPushing = true;			
+					addAction(Actions.sequence
+					(
+						Actions.moveBy(-k*t.boxWidth(), -m*t.boxHeight(), 0.5f), 
+						new PushFalse()
+					));
+				}
+			}
+		}else		
 		if(celda.Disponible(k, m))
 		{
 			isPushing = true;			
 			addAction(Actions.sequence
 			(
 				Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(), 0.5f), 
-				new Action()
-				{
-					@Override
-					public boolean act(float arg0)
-					{
-						isPushing = false;
-						return true;
-					}
-				}
-			));			
+				new PushFalse()
+			));
+			return true;
 		}
 		else if(pieza instanceof Player) //nop, no está isdisponible
 		{
@@ -64,17 +70,21 @@ public class Cube extends Pieza
 			isPushing = true;			
 			addAction(Actions.sequence
 			(
-				Actions.moveBy(-k*t.boxWidth(), -m*t.boxHeight(), 0.5f), 
-				new Action()
-				{
-					@Override
-					public boolean act(float arg0)
-					{
-						isPushing = false;
-						return true;
-					}
-				}
+				Actions.moveBy(-k*t.boxWidth(), -m*t.boxHeight(),0.5f), 
+				new PushFalse()
 			));
+			return true;
+		}
+		return false;
+	}
+	
+	private class PushFalse extends Action
+	{
+		@Override
+		public boolean act(float arg0)
+		{
+			isPushing = false;
+			return true;
 		}
 	}
 	

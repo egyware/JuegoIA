@@ -221,7 +221,8 @@ public class Gameloop implements Screen
 
     @Override
     public void pause() 
-    {    
+    {
+    	if(music.isPlaying()) music.stop();
     }
 
     @Override

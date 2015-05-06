@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Wall;
 
 /**
@@ -97,12 +96,7 @@ public class Tablero extends Group implements ITablero
 		            celdaActual.setPiezaActual(null);
 		            Celda nueva = grid[cj*columns+ci];
 		            nueva.setPiezaActual(p);
-		            p.setCeldaActual(nueva);
-		            if(c instanceof Cube)
-			        {
-		            	System.out.println("C"+c.getX()+" "+c.getY());
-			        	System.out.println("C"+ci+" "+cj);
-			        }
+		            p.setCeldaActual(nueva);		        
 		        }		        
 		    }        
 		    snapshotArray.end();		    
