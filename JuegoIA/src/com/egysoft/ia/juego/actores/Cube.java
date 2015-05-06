@@ -2,11 +2,14 @@ package com.egysoft.ia.juego.actores;
 
 import java.util.Random;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
@@ -15,16 +18,22 @@ public class Cube extends Pieza
 {
 	private static Random random = new Random(System.currentTimeMillis());
 	private TextureRegion texture;
+	private Sound sound;
 	private boolean isPushing = false;
 	
-	public Cube(String assetName, TextureAtlas atlas)
+	public Cube(String assetName, TextureAtlas atlas, Sound sound)
 	{		
 		texture = atlas.findRegion(assetName, random.nextInt(10)<4?1:2);
+		this.sound = sound;
 	}
 	
-	public void draw(Batch batch, float parentFloat)
+	public void draw(Batch batch, float parentAlpha)
 	{
-		batch.draw(texture, getX(), getY());
+		Color old = batch.getColor(), c = getColor();    	
+    	batch.setColor(c.r,c.g,c.b,c.a*parentAlpha);    	
+    	batch.draw(texture, getX(), getY());
+    	batch.setColor(old);
+		
 	}
 
 	public boolean push(Pieza pieza, int k, int m)
@@ -32,6 +41,23 @@ public class Cube extends Pieza
 		if(isPushing) return true;
 		final Celda celda = getCeldaActual();
 		final ITablero t = celda.t;
+		if(!celda.Disponible(Lair.class,k,m))
+		{
+			isPushing = true;
+			//una guarida, en realidad tengo demasiado sueño para exaltarme x'D
+			//bueno el cubo deberia desaparecer
+			sound.play(Config.instance.getVolume());
+			addAction(Actions.sequence
+			(
+					Actions.parallel
+					(
+						Actions.fadeOut(0.5f),
+						Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(),0.5f)
+					),					
+					Actions.removeActor()
+			));
+			return true;			
+		}else
 		if(!celda.Disponible(Cube.class,k,m))
 		{
 			//otro cubo o.o!!!

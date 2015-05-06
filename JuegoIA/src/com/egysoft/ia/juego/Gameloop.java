@@ -52,6 +52,7 @@ public class Gameloop implements Screen
         juego.assets.load("assets/maps/map_01.txt", Tablero.class);
         juego.assets.load("assets/music.mp3", Music.class);
         juego.assets.load("assets/ScreamAndDie.wav", Sound.class);
+        juego.assets.load("assets/cha-ching.wav", Sound.class);
         
         juego.assets.finishLoading();
         

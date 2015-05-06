@@ -12,6 +12,7 @@ import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,6 +34,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 	{
 		final Tablero tablero;
 		final TextureAtlas atlas = assets.get("assets/game.atlas");
+		final Sound cha_ching = assets.get("assets/cha-ching.wav"); 
 		final Scanner scan = new Scanner(fileHandle.read());		
 		int columns = scan.nextInt();
 		int rows = scan.nextInt();
@@ -64,7 +66,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 					break;
 					case 'o':
 					{
-						Cube cube = new Cube("cube", atlas);
+						Cube cube = new Cube("cube", atlas, cha_ching);
 						cube.setPosition(32*(i+0.25f), 32*(j+0.25f));
 						tablero.addActor(cube);
 					}
@@ -97,6 +99,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		Array<AssetDescriptor> array = new Array<AssetDescriptor>();
 		array.add(new AssetDescriptor("assets/uiskin.json",Skin.class));
 		array.add(new AssetDescriptor("assets/game.atlas", TextureAtlas.class));
+		array.add(new AssetDescriptor("assets/cha-ching.wav", Sound.class));
 		return array;
 	}
 
