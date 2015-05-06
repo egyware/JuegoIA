@@ -12,13 +12,18 @@ public interface ITablero
 	 * @param j fila en donde está la celda
 	 * @return La celda en la posicion (i,j). Si las coordenadas están fuera de los limites devolverá null.
 	 */
-    public Celda getCelda(int i,int j);
+    Celda getCelda(int i,int j);
     /**
      * Devuelve si la celda en la posición indicada, esta disponible.
      * @param i
      * @param j
      * @return
      */
-    public boolean Disponible(int i, int j);
+    boolean Disponible(int i, int j);
+	int boxWidth();
+	int boxHeight();
+	int getColumn(float f);
+	int getRow(float f);
+	
     
 }

@@ -6,22 +6,26 @@ package com.egysoft.ia.juego.tablero;
  */
 public class Celda 
 {
-    public final ITablero l;    
+    public final ITablero t;    
     public final int i;
     public final int j;
+    public final int x;
+    public final int y;
     private IPieza pieza;
     
     /**
      *
-     * @param _l
+     * @param _t
      * @param _i
      * @param _j
      */
-    public Celda(ITablero _l, int _i, int _j)    
+    public Celda(ITablero _t, int _i, int _j)    
     {
-        l = _l;
+        t = _t;
         i = _i;
         j = _j;
+        x = i*t.boxWidth();
+        y = j*t.boxHeight();
     }
 
     public IPieza getPiezaActual()
@@ -40,8 +44,15 @@ public class Celda
     
     public boolean Disponible(int k, int m) 
     {
-        Celda siguiente = l.getCelda(i+k, j+m);        
+        Celda siguiente = t.getCelda(i+k, j+m);        
         return siguiente != null && siguiente.Disponible();
+    }
+    
+    public boolean Disponible(float x, float y) 
+    {
+    	int k = (int)(x/t.boxWidth())-i, m = (int)(y/t.boxHeight())-j;    	
+    	if(k == 0 && m == 0) return true;
+    	else return Disponible(k,m);        
     }
 
     /**
@@ -53,7 +64,7 @@ public class Celda
      */
 	public boolean Disponible(Class<? extends IPieza> c, int k, int m)
 	{
-		Celda siguiente = l.getCelda(i+k, j+m);
+		Celda siguiente = t.getCelda(i+k, j+m);
         return siguiente != null && (siguiente.Disponible()  || (!siguiente.Disponible() && !c.isInstance(siguiente.getPiezaActual())));
-	}
+	}	
 }

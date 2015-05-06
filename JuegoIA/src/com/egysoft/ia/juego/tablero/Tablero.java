@@ -1,21 +1,16 @@
 package com.egysoft.ia.juego.tablero;
 
-import com.badlogic.gdx.graphics.Color;
+import java.util.Comparator;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.egysoft.ia.juego.Player;
 import com.egysoft.ia.juego.actores.Wall;
-
-import java.util.Comparator;
 
 /**
  * Esta clase esta basada en Libfdx/Group, sin embargo en vez de usar un SnapshotArray utilza un grid. 
@@ -43,6 +38,7 @@ public class Tablero extends Group implements ITablero
     private final ActorComparator comparator = new ActorComparator();
     private final BitmapFont font;
     private final TextureRegion box;
+    private final TextureRegion grass;
     private final Array<TextureAtlas.AtlasRegion> digits;
         
     public Tablero(TextureAtlas atlas, BitmapFont f, final int c, final int r,final int bw, final int hw)
@@ -62,6 +58,7 @@ public class Tablero extends Group implements ITablero
         font = f;
         box = atlas.findRegion("box");
         digits = atlas.findRegions("digit");
+        grass = atlas.findRegion("background");
     }
         
     @Override
@@ -128,7 +125,14 @@ public class Tablero extends Group implements ITablero
     {    	
     	if(debug)
     	{
-    		super.draw(batch, parentAlfa);
+    		for(int j=0;j<rows;j++)
+    		{
+    			for(int i=0;i<columns;i++)
+    			{
+    				batch.draw(grass, i*boxWidth, j*boxHeight);
+    			}
+    		}
+    		super.draw(batch, parentAlfa);    		
     		drawDebugTablero(batch);    		
     		SnapshotArray<Actor> snapshotArray = getChildren();
 		    Actor childrens[] = snapshotArray.begin();
@@ -146,6 +150,13 @@ public class Tablero extends Group implements ITablero
     	}
     	else
     	{
+    		for(int j=0;j<rows;j++)
+    		{
+    			for(int i=0;i<columns;i++)
+    			{
+    				batch.draw(grass, i*boxWidth, j*boxHeight);
+    			}
+    		}
     		super.draw(batch, parentAlfa);
     	}
     }
@@ -179,5 +190,28 @@ public class Tablero extends Group implements ITablero
 	public void setGameDebug(boolean b)
 	{
 		debug = b;	
+	}
+
+	@Override
+	public int boxWidth() 
+	{
+		return boxWidth;
+	}
+	@Override
+	public int boxHeight() 
+	{
+		return boxHeight;
+	}
+
+	@Override
+	public int getColumn(float f) 
+	{
+		return (int) (f/boxWidth);
+	}
+
+	@Override
+	public int getRow(float f) 
+	{
+		return (int) (f/boxHeight);
 	}
 }
