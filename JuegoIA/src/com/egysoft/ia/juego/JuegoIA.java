@@ -16,7 +16,6 @@ public class JuegoIA extends Game
     public static int Height = 480;
     public AssetManager assets;
     
-    
     @Override
     public void create() 
     {
@@ -24,7 +23,14 @@ public class JuegoIA extends Game
         final InternalFileHandleResolver fileResolver = new InternalFileHandleResolver();
         assets.setLoader(ShaderProgram.class, new ShaderLoader(fileResolver));
         
-        
         setScreen(new Gameloop(this));
     }    
+    
+    @Override
+    public void dispose()
+    {
+    	assets.dispose();
+    	assets = null;
+    	super.dispose();
+    }
 }

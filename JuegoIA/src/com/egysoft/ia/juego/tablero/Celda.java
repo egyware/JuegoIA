@@ -33,8 +33,27 @@ public class Celda
         pieza = p;
     }
     
-    boolean Disponible() 
+    public boolean Disponible()
     {
-        return pieza != null;
+    	return pieza == null;
     }
+    
+    public boolean Disponible(int k, int m) 
+    {
+        Celda siguiente = l.getCelda(i+k, j+m);        
+        return siguiente != null && siguiente.Disponible();
+    }
+
+    /**
+     * Pregunta si la celda siguiente k,m esta disponible.
+     * @param c El tipo de la pieza que debe contener la celda para considerarla ocupada. 
+     * @param k k-esima columna a partir esta celda.
+     * @param m m-esima fila a partir de esta celda.
+     * @return True si la celda está disponible. False si la celda está ocupada por un tipo de pieza c.
+     */
+	public boolean Disponible(Class<? extends IPieza> c, int k, int m)
+	{
+		Celda siguiente = l.getCelda(i+k, j+m);
+        return siguiente != null && (siguiente.Disponible()  || (!siguiente.Disponible() && !c.isInstance(siguiente.getPiezaActual())));
+	}
 }

@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Lair;
-import com.egysoft.ia.juego.actores.Obstaculo;
+import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.tablero.Enemy;
 import com.egysoft.ia.juego.tablero.Tablero;
@@ -69,18 +69,21 @@ public class Gameloop implements Screen
         game.addActor(tablero);
         
         //jugadores
-        Obstaculo o;
-        o = new Obstaculo("violet_wall", atlas);
+        Wall o;
+        o = new Wall("violet_wall", atlas);
         o.setPosition(32*5,32*6);
         tablero.addActor(o);
-        o = new Obstaculo("sand_wall", atlas);
+        o = new Wall("sand_wall", atlas);
         o.setPosition(32*6,32*6);
         tablero.addActor(o);
-        o = new Obstaculo("violet_wall", atlas);
+        o = new Wall("violet_wall", atlas);
         o.setPosition(32*7,32*6);
         tablero.addActor(o);
-        o = new Obstaculo("violet_wall", atlas);
-        o.setPosition(32*5,32*8);
+        o = new Wall("violet_wall", atlas);
+        o.setPosition(32*7,32*5);
+        tablero.addActor(o);
+        o = new Wall("violet_wall", atlas);
+        o.setPosition(32*6,32*5);
         tablero.addActor(o);
         
         Cube c;
@@ -266,7 +269,7 @@ public class Gameloop implements Screen
     public void dispose() 
     {    
     	game.dispose();
-    	hud.dispose();
+    	hud.dispose();    	
     }
     
     

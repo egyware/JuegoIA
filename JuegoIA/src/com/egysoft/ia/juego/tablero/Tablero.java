@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.egysoft.ia.juego.Player;
-import com.egysoft.ia.juego.actores.Obstaculo;
+import com.egysoft.ia.juego.actores.Wall;
 
 import java.util.Comparator;
 
@@ -134,7 +134,7 @@ public class Tablero extends Group implements ITablero
 		    Actor childrens[] = snapshotArray.begin();
     		for(Actor c:childrens) 
   		    {
-  		        if(c instanceof IPieza && !(c instanceof Obstaculo))
+  		        if(c instanceof IPieza && !(c instanceof Wall))
   		        {  		        	
 	        		Celda celda = ((IPieza)c).getCeldaActual();
 	        		float x = c.getX(), y = c.getY();  		        	
@@ -153,12 +153,16 @@ public class Tablero extends Group implements ITablero
     @Override
     public Celda getCelda(int i, int j)
     {
+    	if(i < 0 || i >= columns) return null;
+    	if(j < 0 || j >= rows) return null;
         return grid[j*columns+i];        
     }
 
 	@Override
 	public boolean Disponible(int i, int j) 
 	{
+		if(i < 0 || i >= columns) return false;
+    	if(j < 0 || j >= rows) return false;
 		return grid[j*columns+i].Disponible();
 	}
 
