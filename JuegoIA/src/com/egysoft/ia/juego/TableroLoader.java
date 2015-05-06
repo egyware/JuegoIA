@@ -2,6 +2,8 @@ package com.egysoft.ia.juego;
 
 import java.util.Scanner;
 
+import com.egysoft.ia.juego.actores.Cube;
+import com.egysoft.ia.juego.actores.Enemy;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Tablero;
 import com.badlogic.gdx.assets.AssetDescriptor;
@@ -37,8 +39,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		
 		tablero = new Tablero(assets, columns, rows, 32,32);
 		
-		
-		for(int j=0;j<rows;j++)
+		for(int j=rows-1;j>=0;j--)
 		{
 			final String line = scan.nextLine();
 			for(int i=0;i<columns;i++)				
@@ -49,8 +50,22 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 					case  '#':
 					{
 						Wall wall = new Wall("violet_wall", atlas);
-						wall.setPosition(32*i, 32*(rows-j-1));
-						tablero.addActor(wall);
+						wall.setPosition(32*i, 32*j);
+						tablero.addActor(wall);						
+					}
+					break;
+					case 'x':
+					{
+						Enemy e = new Enemy("rafese", atlas);
+				        e.setPosition(32*i, 32*j);
+				        tablero.addActor(e);	
+					}					
+					break;
+					case 'o':
+					{
+						Cube cube = new Cube("cube", atlas);
+						cube.setPosition(32*i, 32*j);
+						tablero.addActor(cube);
 					}
 					break;
 				}

@@ -14,7 +14,7 @@ public class Cube extends Pieza
 	
 	public Cube(String assetName, TextureAtlas atlas)
 	{		
-		texture = atlas.findRegion(assetName, 1+random.nextInt(1));
+		texture = atlas.findRegion(assetName, random.nextInt(10)<4?1:2);
 	}
 	
 	public void draw(Batch batch, float parentFloat)

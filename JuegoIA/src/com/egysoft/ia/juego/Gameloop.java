@@ -17,11 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.egysoft.ia.juego.actores.Cube;
+import com.egysoft.ia.juego.actores.Enemy;
 import com.egysoft.ia.juego.actores.Lair;
-import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.actores.Player;
-import com.egysoft.ia.juego.tablero.Enemy;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -36,6 +34,7 @@ public class Gameloop implements Screen
     private final Stage hud;    
     private final InputMultiplexer multiplexor;
     private final Tablero tablero;
+    private final CameraController controller;
     
     private ShaderProgram grayShader;
     private ShaderProgram basicShader;
@@ -57,6 +56,7 @@ public class Gameloop implements Screen
         
         game = new Stage();        
         hud = new Stage();
+        controller = new CameraController(game.getCamera());
         game.getBatch().setShader(basicShader);
         
         final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
@@ -68,22 +68,6 @@ public class Gameloop implements Screen
         tablero = juego.assets.get("assets/maps/map_01.txt"); 
         
         game.addActor(tablero);
-        
-        //jugadores     
-        
-        Cube c;
-        c = new Cube("cube", atlas);
-        c.setPosition(32*4, 32*8);
-        tablero.addActor(c);
-        c = new Cube("cube", atlas);
-        c.setPosition(32*4, 32*9);
-        tablero.addActor(c);
-        
-        
-        Enemy e;
-        e = new Enemy("rafese", atlas);
-        e.setPosition(32*10, 32*2);
-        tablero.addActor(e);
         
         
         Lair l;
@@ -100,11 +84,8 @@ public class Gameloop implements Screen
         player = new Player("jasper", atlas);
         player.setPosition(150,100);
         game.setKeyboardFocus(player);
-        tablero.addActor(player);        
-        
-        player = new Player("jasper", atlas);
-        player.setPosition(200,100);
         tablero.addActor(player);
+        controller.follow(player);
     }
 
     private void setGUI() 
@@ -222,7 +203,8 @@ public class Gameloop implements Screen
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); 
         
-        game.act();
+        controller.update(delta);
+        game.act();        
         hud.act();
         game.draw();
         hud.draw();        
@@ -279,10 +261,11 @@ public class Gameloop implements Screen
     
     public float getIntelligence()
     {
-    	return 5;
+    	return (Enemy.velocity - 50)/10;
     }
     public void setIntelligence(float f)
-    {    	
+    {
+    	Enemy.velocity = 50 + 10*f;
     }
     
     public void setPause(boolean pause)

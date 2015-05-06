@@ -17,7 +17,7 @@ public class Wall extends Pieza
 		5,6,5,5,
 		4,5,5,5
 	};
-	//esta tabla contiene 0 para indicar que no es necesario pintar una murralla ahi
+	//esta tabla contiene 0 para indicar que no es necesario pintar una murralla.
 	private static int[] wallTable = 
 	{
 		8,8,0,0,
@@ -46,7 +46,7 @@ public class Wall extends Pieza
 		int index = a|b|c|d;
 		int wallIndex = wallTable[index]-1; //los indices de la tabla están apuntando a las imagenes (indice basado en 1)
 		top  = tiles.get(topTable[index]-1); 		
-		wall = (wallIndex>=0)?tiles.get(wallIndex):null;		
+		wall = (wallIndex>=0)?tiles.get(wallIndex):null; //en este caso, los indices pueden ser negativos en ese caso no pintamos nada.	
 	}
 	
 	public void draw(Batch batch, float parentAlfa)
