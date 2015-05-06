@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Enemy;
+import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Tablero;
 import com.badlogic.gdx.assets.AssetDescriptor;
@@ -64,8 +65,15 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 					case 'o':
 					{
 						Cube cube = new Cube("cube", atlas);
-						cube.setPosition(32*i, 32*j);
+						cube.setPosition(32*(i+0.25f), 32*(j+0.25f));
 						tablero.addActor(cube);
+					}
+					break;
+					case 'l':
+					{
+						Lair lair = new Lair("blue_lair", atlas);
+						lair.setPosition(32*i, 32*j);
+						tablero.addActor(lair);
 					}
 					break;
 				}

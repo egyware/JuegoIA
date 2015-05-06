@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.State;
 import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
 
 /**
@@ -32,6 +35,7 @@ public class Player extends Pieza
     private final RightState rightState;
     private final DownState downState;
     private final UpState upState;
+    private final NullState nullState;
     private State currentState;
     
 	private float time;
@@ -51,34 +55,35 @@ public class Player extends Pieza
         array.set(1, regions.get(1));
         array.set(2, regions.get(0));
         array.set(3, regions.get(2));
-        rightAnimation = new Animation(0.5f, array, Animation.PlayMode.LOOP);
+        rightAnimation = new Animation(0.25f, array, Animation.PlayMode.LOOP);
         
         regions = atlas.findRegions(String.format("%s_izquierda", assetName));
         array.set(0, regions.get(0));
         array.set(1, regions.get(1));
         array.set(2, regions.get(0));
         array.set(3, regions.get(2));
-        leftAnimation = new Animation(0.5f, array, Animation.PlayMode.LOOP);
+        leftAnimation = new Animation(0.25f, array, Animation.PlayMode.LOOP);
         
         regions = atlas.findRegions(String.format("%s_espalda", assetName));
         array.set(0, regions.get(0));
         array.set(1, regions.get(1));
         array.set(2, regions.get(0));
         array.set(3, regions.get(2));
-        upAnimation = new Animation(0.5f, array, Animation.PlayMode.LOOP);
+        upAnimation = new Animation(0.25f, array, Animation.PlayMode.LOOP);
         
         regions = atlas.findRegions(String.format("%s_frente", assetName));
         array.set(0, regions.get(0));
         array.set(1, regions.get(1));
         array.set(2, regions.get(0));
         array.set(3, regions.get(2));
-        downAnimation = new Animation(0.5f, array, Animation.PlayMode.LOOP);
+        downAnimation = new Animation(0.25f, array, Animation.PlayMode.LOOP);
         
         downState = new DownState();
         upState = new UpState();
         leftState = new LeftState();
         rightState = new RightState();
         idleState = new IdleState();
+        nullState = new NullState();
         selected = downAnimation; //deje este para el ultimo
         
         setState(idleState);
@@ -228,7 +233,14 @@ public class Player extends Pieza
 				{
 					setState(idleState);				
 				}
-			}					
+			}
+			if(!celda.Disponible(Cube.class, x-14, y))
+			{
+				//ohh!!! un cubo!!! que hacemos con el?
+				Celda celdaCubo = celda.t.getCelda(x-14, y);
+				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				cubo.push(Player.this, -1, 0);
+			}
 			if(celda.Disponible(x-14,y))
 			{
 				time += delta;
@@ -252,6 +264,7 @@ public class Player extends Pieza
 		@Override
 		public void update(float delta) 
 		{		
+			final Celda celda = getCeldaActual();
 			final float x = getX(), y = getY();			
 			if(!right)
 			{				
@@ -275,7 +288,13 @@ public class Player extends Pieza
 				}
 			}
 			
-			final Celda celda = getCeldaActual();		
+			if(!celda.Disponible(Cube.class, x+12, y))
+			{
+				//ohh!!! un cubo!!! que hacemos con el?
+				Celda celdaCubo = celda.t.getCelda(x+12, y);
+				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				cubo.push(Player.this, 1, 0);
+			}
 			if(celda.Disponible(x+12, y))
 			{
 				time += delta;
@@ -321,6 +340,13 @@ public class Player extends Pieza
 				{
 					setState(idleState);				
 				}
+			}
+			if(!celda.Disponible(Cube.class, x, y-4))
+			{
+				//ohh!!! un cubo!!! que hacemos con el?
+				Celda celdaCubo = celda.t.getCelda(x, y-4);
+				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				cubo.push(Player.this, 0, -1);
 			}
 			if(celda.Disponible(x, y-4))
 			{
@@ -369,6 +395,13 @@ public class Player extends Pieza
 					setState(idleState);				
 				}
 			}
+			if(!celda.Disponible(Cube.class, x, y+18))
+			{
+				//ohh!!! un cubo!!! que hacemos con el?
+				Celda celdaCubo = celda.t.getCelda(x, y+18);
+				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				cubo.push(Player.this, 0, 1);
+			}
 			if(celda.Disponible(x, y+18))
 			{
 				time += delta;
@@ -380,5 +413,52 @@ public class Player extends Pieza
 			}
 			
 		}    	
-    }    
+    }
+    public class NullState implements State
+    {
+		@Override
+		public void enter()
+		{			
+		}
+
+		@Override
+		public void update(float delta) 
+		{
+			time += delta;
+		}
+    	
+    }
+	public void push(Pieza by, int k, int m) 
+	{
+		final ITablero t = getCeldaActual().t;
+		disableInput(true);
+		addAction(Actions.sequence
+		(
+			Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(), 0.5f),
+			new Action() 
+			{
+				@Override
+				public boolean act(float arg0) 
+				{
+					disableInput(false);
+					return true;
+				}						
+			}
+		));		
+	}
+	
+	//aqui seria util una maquina de estados con pila, pero no es necesario
+	private State lastState;
+	private void disableInput(boolean b) 
+	{
+		if(b)
+		{
+			lastState = currentState;
+			setState(nullState);
+		}
+		else
+		{
+			currentState = lastState;
+		}		
+	}    
 }

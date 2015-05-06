@@ -3,6 +3,7 @@ package com.egysoft.ia.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -38,6 +39,8 @@ public class Gameloop implements Screen
     
     private ShaderProgram grayShader;
     private ShaderProgram basicShader;
+    private Music music;
+    private float volume = 10;
     
     public Gameloop(JuegoIA j)
     {
@@ -48,11 +51,14 @@ public class Gameloop implements Screen
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
         juego.assets.load("assets/uiskin.json", Skin.class);
         juego.assets.load("assets/maps/map_01.txt", Tablero.class);
+        juego.assets.load("assets/music.mp3", Music.class);
         
         juego.assets.finishLoading();
         
         grayShader  = juego.assets.get("assets/shaders/gray.shader");
         basicShader = juego.assets.get("assets/shaders/basic.shader");
+        
+        music = juego.assets.get("assets/music.mp3");
         
         game = new Stage();        
         hud = new Stage();
@@ -69,23 +75,19 @@ public class Gameloop implements Screen
         
         game.addActor(tablero);
         
-        
-        Lair l;
-        l = new Lair("blue_lair", atlas);
-        l.setPosition(32*2, 32*2);
-        tablero.addActor(l);
-        
-        l = new Lair("red_lair", atlas);
-        l.setPosition(32*4, 32*2);
-        tablero.addActor(l);
-        
-        
         Player player;
         player = new Player("jasper", atlas);
         player.setPosition(150,100);
         game.setKeyboardFocus(player);
         tablero.addActor(player);
         controller.follow(player);
+        
+        if(volume > 0)
+        {
+        	music.setLooping(true);
+        	music.setVolume(volume);
+        	music.play();
+        }
     }
 
     private void setGUI() 
@@ -253,10 +255,23 @@ public class Gameloop implements Screen
     
     public float getMusicVolume()
     {
-    	return 10;
+    	return volume;
     }
     public void setMusicVolume(float value)
-    {    	
+    {
+    	volume = value;
+    	if(volume >0)
+    	{
+    		music.setVolume(volume*0.1f);
+    		if(!music.isPlaying())
+    		{
+    			music.play();
+    		}
+    	}
+    	else
+    	{
+    		music.stop();
+    	}    	    	
     }
     
     public float getIntelligence()

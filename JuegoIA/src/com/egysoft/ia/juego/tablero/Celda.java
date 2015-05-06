@@ -54,6 +54,13 @@ public class Celda
     	if(k == 0 && m == 0) return true;
     	else return Disponible(k,m);        
     }
+    
+    public boolean Disponible(Class<? extends IPieza> c,float x, float y) 
+    {
+    	int k = (int)(x/t.boxWidth())-i, m = (int)(y/t.boxHeight())-j;    	
+    	if(k == 0 && m == 0) return true;
+    	else return Disponible(c,k,m);        
+    }
 
     /**
      * Pregunta si la celda siguiente k,m esta disponible.

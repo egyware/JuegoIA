@@ -13,6 +13,7 @@ public interface ITablero
 	 * @return La celda en la posicion (i,j). Si las coordenadas están fuera de los limites devolverá null.
 	 */
     Celda getCelda(int i,int j);
+    Celda getCelda(float x, float y);
     /**
      * Devuelve si la celda en la posición indicada, esta disponible.
      * @param i

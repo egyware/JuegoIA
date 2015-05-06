@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Wall;
 
 /**
@@ -27,8 +28,7 @@ public class Tablero extends Group implements ITablero
         @Override
         public int compare (Actor a, Actor b) 
         {
-        	return (int)(b.getY() - a.getY());
-            
+        	return (int)(b.getY()-a.getY());            
         }
     }
     public final int boxWidth;
@@ -70,7 +70,7 @@ public class Tablero extends Group implements ITablero
 		if(actor instanceof IPieza)
 		{
 		    final IPieza p = (IPieza)actor;
-		    int ci = (int) actor.getX()/boxWidth, cj = (int) actor.getY()/boxHeight;
+		    int ci = (int) (actor.getX()/boxWidth), cj = (int) (actor.getY()/boxHeight);
 		    Celda nueva = grid[cj*columns+ci];
 		    nueva.setPiezaActual(p);
 		    p.setCeldaActual(nueva);
@@ -83,7 +83,8 @@ public class Tablero extends Group implements ITablero
     {
     	if(!pausa)
     	{    		
-			getChildren().sort(comparator);
+    		super.act(delta);
+			getChildren().sort(comparator);			
 		    SnapshotArray<Actor> snapshotArray = getChildren();
 		    Actor childrens[] = snapshotArray.begin();
 		    for(Actor c:childrens) 
@@ -91,16 +92,20 @@ public class Tablero extends Group implements ITablero
 		        if(c instanceof IPieza)
 		        {
 		            final IPieza p = (IPieza)c;
-		            int ci = (int) c.getX()/boxWidth, cj = (int) c.getY()/boxHeight;
+		            int ci = (int) (c.getX()/boxWidth), cj = (int) (c.getY()/boxHeight);
 		            Celda celdaActual = p.getCeldaActual();
 		            celdaActual.setPiezaActual(null);
 		            Celda nueva = grid[cj*columns+ci];
 		            nueva.setPiezaActual(p);
 		            p.setCeldaActual(nueva);
-		        }
+		            if(c instanceof Cube)
+			        {
+		            	System.out.println("C"+c.getX()+" "+c.getY());
+			        	System.out.println("C"+ci+" "+cj);
+			        }
+		        }		        
 		    }        
-		    snapshotArray.end();
-		    super.act(delta);
+		    snapshotArray.end();		    
     	}
     }
     
@@ -216,5 +221,11 @@ public class Tablero extends Group implements ITablero
 	public int rows() 
 	{
 		return rows;
+	}
+
+	@Override
+	public Celda getCelda(float x, float y) 
+	{
+		return getCelda((int)(x/boxWidth), (int)(y/boxHeight));
 	}
 }

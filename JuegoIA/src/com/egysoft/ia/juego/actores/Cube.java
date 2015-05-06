@@ -5,12 +5,17 @@ import java.util.Random;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
 
 public class Cube extends Pieza 
 {
 	private static Random random = new Random(System.currentTimeMillis());
 	private TextureRegion texture;
+	private boolean isPushing = false;
 	
 	public Cube(String assetName, TextureAtlas atlas)
 	{		
@@ -19,7 +24,58 @@ public class Cube extends Pieza
 	
 	public void draw(Batch batch, float parentFloat)
 	{
-		batch.draw(texture,  getX()+texture.getRegionWidth()/2, getY()+16);
+		batch.draw(texture, getX(), getY());
+	}
+
+	public void push(Pieza pieza, int k, int m)
+	{
+		if(isPushing) return;
+		final Celda celda = getCeldaActual();
+		final ITablero t = celda.t;
+		if(!celda.Disponible(Cube.class,k,m))
+		{
+			//otro cubo o.o!!!
+			final Celda otra = celda.t.getCelda(celda.i+k, celda.j+m);
+			final Cube otro = (Cube) otra.getPiezaActual();
+			otro.push(this,k, m);
+			return;
+		}
+		if(celda.Disponible(k, m))
+		{
+			isPushing = true;			
+			addAction(Actions.sequence
+			(
+				Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(), 0.5f), 
+				new Action()
+				{
+					@Override
+					public boolean act(float arg0)
+					{
+						isPushing = false;
+						return true;
+					}
+				}
+			));			
+		}
+		else if(pieza instanceof Player) //nop, no está isdisponible
+		{
+			final Player p = (Player)pieza;
+			p.push(this, k, m);
+			isPushing = true;			
+			addAction(Actions.sequence
+			(
+				Actions.moveBy(-k*t.boxWidth(), -m*t.boxHeight(), 0.5f), 
+				new Action()
+				{
+					@Override
+					public boolean act(float arg0)
+					{
+						isPushing = false;
+						return true;
+					}
+				}
+			));
+		}
 	}
 	
 	
