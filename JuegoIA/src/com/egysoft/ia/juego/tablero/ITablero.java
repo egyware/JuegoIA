@@ -21,9 +21,9 @@ public interface ITablero
      */
     boolean Disponible(int i, int j);
 	int boxWidth();
-	int boxHeight();
-	int getColumn(float f);
-	int getRow(float f);
+	int boxHeight();	
+	int rows();
+	int columns();
 	
     
 }

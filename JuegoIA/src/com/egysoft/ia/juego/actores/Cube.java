@@ -19,7 +19,7 @@ public class Cube extends Pieza
 	
 	public void draw(Batch batch, float parentFloat)
 	{
-		batch.draw(texture,  getX(), getY()-20);
+		batch.draw(texture,  getX()+texture.getRegionWidth()/2, getY()+16);
 	}
 	
 	

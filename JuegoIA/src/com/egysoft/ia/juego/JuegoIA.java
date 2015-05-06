@@ -1,10 +1,11 @@
 package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.egysoft.ia.juego.tablero.Tablero;
+
 
 /**
  *
@@ -22,6 +23,7 @@ public class JuegoIA extends Game
         assets = new AssetManager();
         final InternalFileHandleResolver fileResolver = new InternalFileHandleResolver();
         assets.setLoader(ShaderProgram.class, new ShaderLoader(fileResolver));
+        assets.setLoader(Tablero.class, new TableroLoader(fileResolver));
         
         setScreen(new Gameloop(this));
     }    

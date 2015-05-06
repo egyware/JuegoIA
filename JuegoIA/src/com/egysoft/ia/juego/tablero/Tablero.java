@@ -2,12 +2,14 @@ package com.egysoft.ia.juego.tablero;
 
 import java.util.Comparator;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.egysoft.ia.juego.actores.Wall;
@@ -25,9 +27,8 @@ public class Tablero extends Group implements ITablero
         @Override
         public int compare (Actor a, Actor b) 
         {
-            int r = (int)(b.getY() - a.getY());
-            if(r == 0) return (int)(a.getX() - b.getY());
-            else return r;            
+        	return (int)(b.getY() - a.getY());
+            
         }
     }
     public final int boxWidth;
@@ -41,7 +42,7 @@ public class Tablero extends Group implements ITablero
     private final TextureRegion grass;
     private final Array<TextureAtlas.AtlasRegion> digits;
         
-    public Tablero(TextureAtlas atlas, BitmapFont f, final int c, final int r,final int bw, final int hw)
+    public Tablero(AssetManager assets, final int c, final int r,final int bw, final int hw)
     {
     	boxWidth = bw;
         boxHeight = hw;
@@ -55,7 +56,9 @@ public class Tablero extends Group implements ITablero
                 grid[j*columns+i] = new Celda(this, i,j);
             }
         }	
-        font = f;
+        TextureAtlas atlas = assets.get("assets/game.atlas");
+        Skin skin = assets.get("assets/uiskin.json");
+        font = skin.getFont("default-font");
         box = atlas.findRegion("box");
         digits = atlas.findRegions("digit");
         grass = atlas.findRegion("background");
@@ -204,14 +207,14 @@ public class Tablero extends Group implements ITablero
 	}
 
 	@Override
-	public int getColumn(float f) 
+	public int columns() 
 	{
-		return (int) (f/boxWidth);
+		return columns;
 	}
 
 	@Override
-	public int getRow(float f) 
+	public int rows() 
 	{
-		return (int) (f/boxHeight);
+		return rows;
 	}
 }

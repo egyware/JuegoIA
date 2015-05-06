@@ -48,6 +48,7 @@ public class Gameloop implements Screen
         juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
         juego.assets.load("assets/uiskin.json", Skin.class);
+        juego.assets.load("assets/maps/map_01.txt", Tablero.class);
         
         juego.assets.finishLoading();
         
@@ -58,33 +59,17 @@ public class Gameloop implements Screen
         hud = new Stage();
         game.getBatch().setShader(basicShader);
         
-        final Skin skin = juego.assets.get("assets/uiskin.json");
         final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
-        setGUI(skin);
+        setGUI();
         
         multiplexor = new InputMultiplexer(hud, game);
         
-        tablero = new Tablero(atlas, skin.getFont("default-font"),18,18,32,32); //se crea el laberinto y luego todo ahi se añade, aunque lo ideal sea solo en Stage..
+        //se crea a partir de un archivo cargado previamente en assets
+        tablero = juego.assets.get("assets/maps/map_01.txt"); 
         
         game.addActor(tablero);
         
-        //jugadores
-        Wall o;
-        o = new Wall("violet_wall", atlas);
-        o.setPosition(32*5,32*6);
-        tablero.addActor(o);
-        o = new Wall("sand_wall", atlas);
-        o.setPosition(32*6,32*6);
-        tablero.addActor(o);
-        o = new Wall("violet_wall", atlas);
-        o.setPosition(32*7,32*6);
-        tablero.addActor(o);
-        o = new Wall("violet_wall", atlas);
-        o.setPosition(32*7,32*5);
-        tablero.addActor(o);
-        o = new Wall("violet_wall", atlas);
-        o.setPosition(32*6,32*5);
-        tablero.addActor(o);
+        //jugadores     
         
         Cube c;
         c = new Cube("cube", atlas);
@@ -122,8 +107,9 @@ public class Gameloop implements Screen
         tablero.addActor(player);
     }
 
-    private void setGUI(final Skin skin) 
+    private void setGUI() 
     {
+    	final Skin skin = juego.assets.get("assets/uiskin.json");
     	final Table table = new Table();
     	table.setFillParent(true);    	
     	hud.addActor(table);

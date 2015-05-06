@@ -6,13 +6,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.State;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.IPieza;
 import com.egysoft.ia.juego.tablero.Pieza;
 
 /**
@@ -324,7 +322,7 @@ public class Player extends Pieza
 					setState(idleState);				
 				}
 			}
-			if(celda.Disponible(x, y+4))
+			if(celda.Disponible(x, y-4))
 			{
 				time += delta;
 				setY(getY()-velocity*delta);
