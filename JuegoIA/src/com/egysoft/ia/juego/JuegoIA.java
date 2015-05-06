@@ -1,6 +1,7 @@
 package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -24,8 +25,8 @@ public class JuegoIA extends Game
         final InternalFileHandleResolver fileResolver = new InternalFileHandleResolver();
         assets.setLoader(ShaderProgram.class, new ShaderLoader(fileResolver));
         assets.setLoader(Tablero.class, new TableroLoader(fileResolver));
-        
-        setScreen(new Gameloop(this));
+        new Config(assets);
+        showGameInit();
     }    
     
     @Override
@@ -35,4 +36,18 @@ public class JuegoIA extends Game
     	assets = null;
     	super.dispose();
     }
+
+	public void showGameInit()
+	{
+		Screen screen = getScreen();
+		if(screen != null)screen.dispose();
+		setScreen(new GameInit(this));		
+	}
+
+	public void showGameloop() 
+	{
+		Screen screen = getScreen();
+		if(screen != null)screen.dispose();
+		setScreen(new Gameloop(this));		
+	}
 }

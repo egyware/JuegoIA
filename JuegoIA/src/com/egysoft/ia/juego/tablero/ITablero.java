@@ -25,6 +25,7 @@ public interface ITablero
 	int boxHeight();	
 	int rows();
 	int columns();
+	void gameEnd();
 	
     
 }

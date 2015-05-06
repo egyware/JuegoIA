@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -18,8 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.egysoft.ia.juego.actores.Enemy;
-import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.tablero.Tablero;
 
@@ -52,6 +51,7 @@ public class Gameloop implements Screen
         juego.assets.load("assets/uiskin.json", Skin.class);
         juego.assets.load("assets/maps/map_01.txt", Tablero.class);
         juego.assets.load("assets/music.mp3", Music.class);
+        juego.assets.load("assets/ScreamAndDie.wav", Sound.class);
         
         juego.assets.finishLoading();
         
@@ -71,13 +71,13 @@ public class Gameloop implements Screen
         multiplexor = new InputMultiplexer(hud, game);
         
         //se crea a partir de un archivo cargado previamente en assets
-        tablero = juego.assets.get("assets/maps/map_01.txt"); 
+        tablero = juego.assets.get("assets/maps/map_01.txt");
+        tablero.setGameloop(this);
         
-        game.addActor(tablero);
+        game.addActor(tablero);        
         
         Player player;
-        player = new Player("jasper", atlas);
-        player.setPosition(150,100);
+        player = new Player("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
         game.setKeyboardFocus(player);
         tablero.addActor(player);
         controller.follow(player);
@@ -97,7 +97,9 @@ public class Gameloop implements Screen
     	table.setFillParent(true);    	
     	hud.addActor(table);
     	
-        final TextButton opciones = new TextButton("opciones",skin);
+        final TextButton opciones = new TextButton("Opciones",skin);
+        final TextButton salir = new TextButton("Salir",skin);
+        
         opciones.addListener(new ChangeListener()
         {
 			@Override
@@ -111,9 +113,9 @@ public class Gameloop implements Screen
 				Slider iaSlider = new Slider(0,10,1, false, skin);
 				TextButton ok = new TextButton("Aceptar", skin);
 				
-				musicSlider.setValue(getMusicVolume());
-				musicBox.setChecked(getMusicVolume()<=0);
-				iaSlider.setValue(getIntelligence());
+				musicSlider.setValue(Config.instance.getVolume());
+				musicBox.setChecked(Config.instance.getVolume()<=0);
+				iaSlider.setValue(Config.instance.getEnemyIntelligence());
 				debugBox.setChecked(getDebug());				
 				
 				musicBox.addListener(new ChangeListener()
@@ -150,7 +152,7 @@ public class Gameloop implements Screen
 					@Override
 					public void changed(ChangeEvent arg0, Actor arg1) 
 					{
-						setMusicVolume(musicSlider.getValue());
+						Config.instance.setVolume(musicSlider.getValue()*0.1f);
 					}					
 				});
 				iaSlider.addListener(new ChangeListener()
@@ -158,7 +160,7 @@ public class Gameloop implements Screen
 					@Override
 					public void changed(ChangeEvent arg0, Actor arg1) 
 					{
-						setIntelligence(iaSlider.getValue());						
+						Config.instance.setEnemyIntelligence((int) iaSlider.getValue());						
 					}					
 				});
 				
@@ -189,8 +191,20 @@ public class Gameloop implements Screen
 			}        	
         });
         
+        salir.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{
+				juego.showGameInit();
+			}
+		});
+        
         table.row().expand();
         table.add(opciones).right().top();        
+        table.row().expand();
+        table.add(salir).right().bottom();
+        
 	}
 
 	@Override
@@ -234,6 +248,7 @@ public class Gameloop implements Screen
     public void hide() 
     {    
         Gdx.input.setInputProcessor(null);
+        if(music.isPlaying()) music.stop();
     }
 
     @Override
@@ -254,36 +269,6 @@ public class Gameloop implements Screen
     	tablero.setGameDebug(b);
     }
     
-    public float getMusicVolume()
-    {
-    	return volume;
-    }
-    public void setMusicVolume(float value)
-    {
-    	volume = value;
-    	if(volume >0)
-    	{
-    		music.setVolume(volume*0.1f);
-    		if(!music.isPlaying())
-    		{
-    			music.play();
-    		}
-    	}
-    	else
-    	{
-    		music.stop();
-    	}    	    	
-    }
-    
-    public float getIntelligence()
-    {
-    	return (Enemy.velocity - 50)/10;
-    }
-    public void setIntelligence(float f)
-    {
-    	Enemy.velocity = 50 + 10*f;
-    }
-    
     public void setPause(boolean pause)
     {
     	final Batch batch = game.getBatch();
@@ -297,5 +282,24 @@ public class Gameloop implements Screen
     	}
     	tablero.setPausa(pause);
     	
+    }
+    
+    public void gameEnd()
+    {
+    	final Skin skin = juego.assets.get("assets/uiskin.json");
+    	final Dialog dialog = new Dialog("Fin del juego", skin);
+    	TextButton ok = new TextButton("Aceptar", skin);
+    	dialog.row();
+		dialog.add(ok).colspan(3).center();
+    	ok.addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ChangeEvent arg0, Actor arg1) 
+			{
+				dialog.hide();
+				juego.showGameInit();
+			}					
+		});
+    	dialog.show(hud);
     }
 }

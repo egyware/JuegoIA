@@ -1,6 +1,8 @@
 package com.egysoft.ia.juego.actores;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
+import com.egysoft.ia.juego.Config;
+import com.egysoft.ia.juego.Gameloop;
 import com.egysoft.ia.juego.State;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.ITablero;
@@ -24,6 +28,7 @@ public class Player extends Pieza
 {
 	private static final float velocity = 50.0f;
 	
+	private final Sound sound;
 	private final Animation upAnimation;
 	private final Animation downAnimation;
 	private final Animation leftAnimation;
@@ -41,7 +46,7 @@ public class Player extends Pieza
 	private float time;
     public boolean left, right,up, down;
     
-    public Player(String assetName, TextureAtlas atlas)
+    public Player(String assetName, TextureAtlas atlas, Sound sound)
     {
     	Array<AtlasRegion> regions;
         Array<TextureRegion> array = new Array<>(4);
@@ -85,6 +90,8 @@ public class Player extends Pieza
         idleState = new IdleState();
         nullState = new NullState();
         selected = downAnimation; //deje este para el ultimo
+        
+        this.sound = sound;
         
         setState(idleState);
         
@@ -163,8 +170,12 @@ public class Player extends Pieza
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
-       TextureRegion region = selected.getKeyFrame(time);
-       batch.draw(region, getX()-14, getY()-4);       
+    	Color old = batch.getColor(), c = getColor();    	
+    	batch.setColor(c.r,c.g,c.b,c.a*parentAlpha);
+    	TextureRegion region = selected.getKeyFrame(time);
+    	batch.draw(region, getX()-14, getY()-4);
+    	batch.setColor(old);
+    	
     }
     
     public class IdleState implements State
@@ -423,8 +434,7 @@ public class Player extends Pieza
 
 		@Override
 		public void update(float delta) 
-		{
-			time += delta;
+		{			
 		}
     	
     }
@@ -460,5 +470,28 @@ public class Player extends Pieza
 		{
 			currentState = lastState;
 		}		
+	}
+
+	private boolean isHunted;
+	public void hunted(Enemy enemy)
+	{
+		if(isHunted) return;
+		isHunted = true;
+		disableInput(true);
+		sound.play(Config.instance.getVolume());
+		addAction(Actions.sequence
+		(
+			Actions.fadeOut(0.5f),
+			new Action()
+			{
+				@Override
+				public boolean act(float arg0) 
+				{
+					getCeldaActual().t.gameEnd();
+					return true;
+				}
+			}			
+		));
+		
 	}    
 }

@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.egysoft.ia.juego.Gameloop;
+import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
 
 /**
@@ -40,6 +42,8 @@ public class Tablero extends Group implements ITablero
     private final TextureRegion box;
     private final TextureRegion grass;
     private final Array<TextureAtlas.AtlasRegion> digits;
+	private float xi,yi; //posicion inicial
+	
         
     public Tablero(AssetManager assets, final int c, final int r,final int bw, final int hw)
     {
@@ -66,6 +70,10 @@ public class Tablero extends Group implements ITablero
     @Override
     public void addActor(Actor actor)
     {
+    	if(actor instanceof Player)
+    	{
+    		actor.setPosition(xi, yi);    		
+    	}
 		if(actor instanceof IPieza)
 		{
 		    final IPieza p = (IPieza)actor;
@@ -221,5 +229,27 @@ public class Tablero extends Group implements ITablero
 	public Celda getCelda(float x, float y) 
 	{
 		return getCelda((int)(x/boxWidth), (int)(y/boxHeight));
+	}
+
+	private Gameloop gameloop;
+	public void setGameloop(Gameloop gameloop) 
+	{	
+		this.gameloop = gameloop;
+	}
+	public Gameloop getGameloop()
+	{
+		return gameloop;
+	}
+
+	@Override
+	public void gameEnd() 
+	{
+		gameloop.gameEnd();		
+	}
+
+	public void setInitialPosition(int xi, int yi) 
+	{
+		this.xi = xi;
+		this.yi = yi;
 	}
 }

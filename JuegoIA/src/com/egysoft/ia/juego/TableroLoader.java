@@ -76,6 +76,11 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 						tablero.addActor(lair);
 					}
 					break;
+					case 'i':
+					{
+						tablero.setInitialPosition(32*i,32*j);
+					}
+					break;
 				}
 			}
 		}
