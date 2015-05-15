@@ -73,5 +73,10 @@ public class Celda
 	{
 		Celda siguiente = t.getCelda(i+k, j+m);
         return siguiente != null && (siguiente.Disponible()  || (!siguiente.Disponible() && !c.isInstance(siguiente.getPiezaActual())));
-	}	
+	}
+	
+	public Celda Obtener(int k, int m)
+	{
+		return t.getCelda(i+k, j+m);
+	}
 }

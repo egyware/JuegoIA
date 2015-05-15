@@ -15,8 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.State;
+import com.egysoft.ia.juego.algoritmos.Algoritmo1;
 import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.Estado;
 import com.egysoft.ia.juego.tablero.ITablero;
+import com.egysoft.ia.juego.tablero.Operacion;
 import com.egysoft.ia.juego.tablero.Pieza;
 
 /**
@@ -149,9 +152,38 @@ public class Player extends Pieza
         });
     }
     
+    private Algoritmo1 algoritmo = new Algoritmo1();
+    Array<Estado> operaciones;
+    Estado estado = null;
     @Override
     public void	act(float delta)
     {
+    	if(operaciones == null) operaciones = algoritmo.buscar(getCeldaActual());
+    	left = right = up = down = false;
+    	if(operaciones.size > 0)
+    	{
+    		if(estado == null || estado.celda == getCeldaActual())	estado = operaciones.pop();	    	
+	    	switch(estado.operacion)
+	    	{
+			case Abajo:		
+				down = true;
+				break;
+			case Arriba:			
+				up = true;			
+				break;
+			case Derecha:			
+				right = true;			
+				break;		
+			case Izquierda:
+				left = true;			
+				break;
+			case Inicial:
+				break;
+			default:
+				break;    	
+	    	}
+    	}
+    	
     	currentState.update(delta);
         super.act(delta);
     }

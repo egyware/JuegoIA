@@ -39,7 +39,6 @@ public class Gameloop implements Screen
     private ShaderProgram grayShader;
     private ShaderProgram basicShader;
     private Music music;
-    private float volume = 10;
     
     public Gameloop(JuegoIA j)
     {
@@ -83,10 +82,10 @@ public class Gameloop implements Screen
         tablero.addActor(player);
         controller.follow(player);
         
-        if(volume > 0)
+        if(Config.instance.getVolume() > 0)
         {
         	music.setLooping(true);
-        	music.setVolume(volume);
+        	music.setVolume(Config.instance.getVolume());
         	music.play();
         }
     }

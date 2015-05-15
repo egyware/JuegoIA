@@ -9,7 +9,7 @@ public class Config
 {
 	public static Config instance;
 	private float volume = 1;
-	private int enemyIntelligence = 10;
+	private int enemyIntelligence = 0;
 	private AssetManager assets; 
 	
 	public Config(AssetManager assets)

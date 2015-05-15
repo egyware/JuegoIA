@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.egysoft.ia.juego.loaders.ShaderLoader;
+import com.egysoft.ia.juego.loaders.TableroLoader;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 
@@ -41,6 +43,7 @@ public class JuegoIA extends Game
 	{
 		Screen screen = getScreen();
 		if(screen != null)screen.dispose();
+		assets.clear();
 		setScreen(new GameInit(this));		
 	}
 
@@ -48,6 +51,7 @@ public class JuegoIA extends Game
 	{
 		Screen screen = getScreen();
 		if(screen != null)screen.dispose();
+		assets.clear();
 		setScreen(new Gameloop(this));		
 	}
 }
