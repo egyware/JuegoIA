@@ -160,9 +160,11 @@ public class Player extends Pieza
     {
     	if(operaciones == null) operaciones = algoritmo.buscar(getCeldaActual());
     	left = right = up = down = false;
-    	if(operaciones.size > 0)
+    	if(operaciones != null && operaciones.size > 1)
     	{
-    		if(estado == null || estado.celda == getCeldaActual())	estado = operaciones.pop();	    	
+    		operaciones.pop();
+    		if(estado == null || estado.celda == getCeldaActual())	estado = operaciones.pop();
+    		System.out.println(estado);
 	    	switch(estado.operacion)
 	    	{
 			case Abajo:		
@@ -182,6 +184,7 @@ public class Player extends Pieza
 			default:
 				break;    	
 	    	}
+	    	operaciones = null;
     	}
     	
     	currentState.update(delta);

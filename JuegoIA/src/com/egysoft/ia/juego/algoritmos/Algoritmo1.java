@@ -1,6 +1,8 @@
 package com.egysoft.ia.juego.algoritmos;
 
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -34,16 +36,17 @@ public class Algoritmo1
 	public Array<Estado> buscar(Celda inicial)
 	{
 		final ObjectMap<Celda, Estado> agenda = new ObjectMap<Celda, Estado>(); //o historial
-		final Array<Estado> cola = new Array<Estado>(); // cola
-		final Array<Array<Estado>> resultados = new Array<Array<Estado>>();//todos los resultados
+		final LinkedList<Estado> cola = new LinkedList<Estado>(); // cola
+		//final Array<Array<Estado>> resultados = new Array<Array<Estado>>();//todos los resultados
 		
 		//he revisado Array.java y add corresponde a push ya que lo añade al final del arreglo
 		//https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/utils/Array.java
+		//15-05-2015 Me acabo de dar cuenta que utilizaba una pila y no una cola. Bueno estoy utilizando LinkedList de java.utils
 		cola.add(new Estado(inicial));
 		
-		while(cola.size > 0)
+		while(cola.size() > 0)
 		{
-			Estado actual = cola.pop();
+			Estado actual = cola.poll();
 			agenda.put(actual.celda, actual); //lo guardo en nuestra agenda o historial
 			
 			//este es nuestro estado final
@@ -57,9 +60,10 @@ public class Algoritmo1
 					resultado.add(aux);
 					aux = aux.predesor;
 				}
-				//return resultado;
-				resultados.add(resultado);
-				continue;
+				System.out.println(resultado);
+				return resultado;
+				//resultados.add(resultado);
+				//continue;
 			}
 			
 			for(Operacion operacion: operaciones) //por cada operacion reviso si existen celdas adyacentes
@@ -75,15 +79,15 @@ public class Algoritmo1
 			}			
 		}	
 		
-		if(resultados.size > 0)
-		{
-			resultados.sort(comparador);
-			for(Array<Estado> a:resultados)
-			{
-				System.out.println(a.size);
-			}			
-			return resultados.first();
-		}		
+//		if(resultados.size > 0)
+//		{
+//			resultados.sort(comparador);
+//			for(Array<Estado> a:resultados)
+//			{
+//				System.out.println(a.size);
+//			}			
+//			return resultados.first();
+//		}		
 		return null;
 	}
 	

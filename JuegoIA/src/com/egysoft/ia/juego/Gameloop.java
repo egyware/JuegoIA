@@ -2,6 +2,7 @@ package com.egysoft.ia.juego;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -19,7 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Player;
+import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -68,7 +72,70 @@ public class Gameloop implements Screen
         final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
         setGUI();
         
-        multiplexor = new InputMultiplexer(hud, game);
+        multiplexor = new InputMultiplexer(hud, game, new InputProcessor()
+        {
+			@Override
+			public boolean keyDown(int arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean keyTyped(char arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean keyUp(int arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean mouseMoved(int arg0, int arg1) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean scrolled(int arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			private Vector3 tmp = new Vector3();
+			@Override
+			public boolean touchDown(int x, int y, int arg2, int arg3)
+			{
+//				Cube cube = new Cube("cube", atlas, juego.assets.get("assets/cha-ching.wav"));
+//				final int w = tablero.boxWidth, h = tablero.boxHeight;				
+//				final int i = x / w, j = y / h;
+//				cube.setPosition(i*w, j*h);
+//				tablero.addActor(cube);	
+				tmp.set(x, y, 0);
+				game.getCamera().unproject(tmp);
+				Wall wall = new Wall("sand_wall", atlas);
+				final int w = tablero.boxWidth, h = tablero.boxHeight;
+				final int i = (int) (tmp.x/w), j = (int) (tmp.y/h);
+				wall.setPosition(i*w, j*h);
+				tablero.addActor(wall);				
+				return true;
+			}
+
+			@Override
+			public boolean touchDragged(int arg0, int arg1, int arg2) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+        
+        });
         
         //se crea a partir de un archivo cargado previamente en assets
         tablero = juego.assets.get("assets/maps/map_01.txt");

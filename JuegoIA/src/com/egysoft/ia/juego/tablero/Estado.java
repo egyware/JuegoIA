@@ -24,4 +24,10 @@ public class Estado
 		this.operacion = operacion;
 		this.predesor  = predesor;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("{(%d, %d), %s}", celda.i, celda.j, operacion.name());		
+	}
 }
