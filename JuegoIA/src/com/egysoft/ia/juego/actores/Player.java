@@ -158,14 +158,46 @@ public class Player extends Pieza
     @Override
     public void	act(float delta)
     {
-    	if(operaciones == null) operaciones = algoritmo.buscar(getCeldaActual());
-    	left = right = up = down = false;
-    	if(operaciones != null && operaciones.size > 1)
+    	final Celda actual = getCeldaActual();
+    	
+    	do
     	{
-    		operaciones.pop();
-    		if(estado == null || estado.celda == getCeldaActual())	estado = operaciones.pop();
-    		System.out.println(estado);
-	    	switch(estado.operacion)
+	    	if(operaciones == null)
+			{
+	    		operaciones = algoritmo.buscar(actual);
+	    		if(operaciones == null)
+	    		{
+	    			//salir de este do-while si no encuentra nada
+	    			break; 
+	    		}
+	    		operaciones.pop();
+	    		System.out.println(operaciones);
+			}
+	    	
+	    	if(operaciones.size > 0)
+	    	{
+	    		if(estado == null || estado.celda == actual ) 
+				{
+	    			estado = operaciones.pop();
+	    			System.out.println(estado);
+				}    		
+	    	}
+	    	
+	    	if(estado != null)
+	    	{
+	    		Operacion op = estado.operacion;
+	    		if(!actual.Disponible(Wall.class, op.k, op.m))
+	    		{
+	    			operaciones = null;
+	    			estado = null;
+	    		}
+	    	}
+    	}while(operaciones == null);
+    	
+    	down = up = left = right = false;
+		if(estado != null)
+		{
+			switch(estado.operacion)
 	    	{
 			case Abajo:		
 				down = true;
@@ -184,8 +216,7 @@ public class Player extends Pieza
 			default:
 				break;    	
 	    	}
-	    	operaciones = null;
-    	}
+		}    	
     	
     	currentState.update(delta);
         super.act(delta);
@@ -207,7 +238,7 @@ public class Player extends Pieza
     	Color old = batch.getColor(), c = getColor();    	
     	batch.setColor(c.r,c.g,c.b,c.a*parentAlpha);
     	TextureRegion region = selected.getKeyFrame(time);
-    	batch.draw(region, getX()-14, getY()-4);
+    	batch.draw(region, getX()-14, getY()-12);
     	batch.setColor(old);
     	
     }

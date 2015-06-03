@@ -1,8 +1,6 @@
 package com.egysoft.ia.juego.algoritmos;
 
-import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.Queue;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -20,15 +18,7 @@ import com.egysoft.ia.juego.tablero.Operacion;
 public class Algoritmo1
 {
 	private static final Operacion[] operaciones = {Operacion.Arriba, Operacion.Izquierda, Operacion.Abajo,Operacion.Derecha};
-	private static Comparator<Array<Estado>> comparador = new Comparator<Array<Estado>>()
-	{
-		@Override
-		public int compare(Array<Estado> a, Array<Estado> b) 
-		{
-			return a.size - b.size;
-		}		
-	};
-	
+
 	public Algoritmo1()
 	{		
 	}
@@ -37,8 +27,7 @@ public class Algoritmo1
 	{
 		final ObjectMap<Celda, Estado> agenda = new ObjectMap<Celda, Estado>(); //o historial
 		final LinkedList<Estado> cola = new LinkedList<Estado>(); // cola
-		//final Array<Array<Estado>> resultados = new Array<Array<Estado>>();//todos los resultados
-		
+
 		//he revisado Array.java y add corresponde a push ya que lo añade al final del arreglo
 		//https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/utils/Array.java
 		//15-05-2015 Me acabo de dar cuenta que utilizaba una pila y no una cola. Bueno estoy utilizando LinkedList de java.utils
@@ -59,11 +48,8 @@ public class Algoritmo1
 				{
 					resultado.add(aux);
 					aux = aux.predesor;
-				}
-				System.out.println(resultado);
-				return resultado;
-				//resultados.add(resultado);
-				//continue;
+				}				
+				return resultado;				
 			}
 			
 			for(Operacion operacion: operaciones) //por cada operacion reviso si existen celdas adyacentes
@@ -77,17 +63,8 @@ public class Algoritmo1
 					}
 				}
 			}			
-		}	
-		
-//		if(resultados.size > 0)
-//		{
-//			resultados.sort(comparador);
-//			for(Array<Estado> a:resultados)
-//			{
-//				System.out.println(a.size);
-//			}			
-//			return resultados.first();
-//		}		
+		}
+				
 		return null;
 	}
 	

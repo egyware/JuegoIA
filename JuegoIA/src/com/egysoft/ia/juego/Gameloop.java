@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
+import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.IPieza;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -108,29 +110,39 @@ public class Gameloop implements Screen
 			@Override
 			public boolean touchDown(int x, int y, int arg2, int arg3)
 			{
-//				Cube cube = new Cube("cube", atlas, juego.assets.get("assets/cha-ching.wav"));
-//				final int w = tablero.boxWidth, h = tablero.boxHeight;				
-//				final int i = x / w, j = y / h;
-//				cube.setPosition(i*w, j*h);
-//				tablero.addActor(cube);	
 				tmp.set(x, y, 0);
 				game.getCamera().unproject(tmp);
-				Wall wall = new Wall("sand_wall", atlas);
 				final int w = tablero.boxWidth, h = tablero.boxHeight;
-				final int i = (int) (tmp.x/w), j = (int) (tmp.y/h);
-				wall.setPosition(i*w, j*h);
-				tablero.addActor(wall);				
-				return true;
+				final int i = (int) (tmp.x/w), j = (int) (tmp.y/h);				
+				Celda celda = tablero.getCelda(i, j);
+				if(celda != null)
+				{
+					IPieza pieza = celda.getPiezaActual();
+					if(pieza != null && !(pieza instanceof Player) )
+					{
+						tablero.removeActor((Actor)pieza);
+					}
+					else
+					{
+						Wall wall = new Wall("sand_wall", atlas);
+						wall.setPosition(i*w, j*h);
+						tablero.addActor(wall);
+					}
+					return true;
+				}
+				return false;
 			}
 
 			@Override
-			public boolean touchDragged(int arg0, int arg1, int arg2) {
+			public boolean touchDragged(int arg0, int arg1, int arg2) 
+			{
 				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
-			public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
+			public boolean touchUp(int arg0, int arg1, int arg2, int arg3) 
+			{
 				// TODO Auto-generated method stub
 				return false;
 			}
