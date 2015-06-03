@@ -23,9 +23,10 @@ public class Algoritmo1
 	{		
 	}
 	
+	final ObjectMap<Celda, Estado> agenda = new ObjectMap<Celda, Estado>(); //o historial
 	public Array<Estado> buscar(Celda inicial)
 	{
-		final ObjectMap<Celda, Estado> agenda = new ObjectMap<Celda, Estado>(); //o historial
+		agenda.clear();
 		final LinkedList<Estado> cola = new LinkedList<Estado>(); // cola
 
 		//he revisado Array.java y add corresponde a push ya que lo añade al final del arreglo
