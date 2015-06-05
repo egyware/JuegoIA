@@ -11,10 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.IPieza;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
+import com.egysoft.ia.juego.tablero.Pushable;
 
-public class Cube extends Pieza 
+public class Cube extends Pieza implements Pushable
 {
 	private static Random random = new Random(System.currentTimeMillis());
 	private TextureRegion texture;
@@ -36,7 +38,7 @@ public class Cube extends Pieza
 		
 	}
 
-	public boolean push(Pieza pieza, int k, int m)
+	public boolean push(IPieza pieza, int k, int m)
 	{
 		if(isPushing) return true;
 		final Celda celda = getCeldaActual();

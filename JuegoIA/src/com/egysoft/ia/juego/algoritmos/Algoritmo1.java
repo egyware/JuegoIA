@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.Estado;
 import com.egysoft.ia.juego.tablero.Operacion;
 
 /**
@@ -50,7 +49,7 @@ public class Algoritmo1
 					resultado.add(aux);
 					aux = aux.predesor;
 				}				
-				return resultado;				
+				return resultado;
 			}
 			
 			for(Operacion operacion: operaciones) //por cada operacion reviso si existen celdas adyacentes

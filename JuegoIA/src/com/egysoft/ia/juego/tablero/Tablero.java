@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.egysoft.ia.juego.Gameloop;
+import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
 
@@ -38,11 +39,13 @@ public class Tablero extends Group implements ITablero
     public final int rows; 
     private final Celda grid[];
     private final ActorComparator comparator = new ActorComparator();
-    private final BitmapFont font;
+    private final BitmapFont font;    
+    private final Array<Lair> lairs;
     private final TextureRegion box;
-    private final TextureRegion grass;
+    private final TextureRegion grass;    
     private final Array<TextureAtlas.AtlasRegion> digits;
 	private float xi,yi; //posicion inicial
+	
 	
         
     public Tablero(AssetManager assets, final int c, final int r,final int bw, final int hw)
@@ -64,7 +67,8 @@ public class Tablero extends Group implements ITablero
         font = skin.getFont("default-font");
         box = atlas.findRegion("box");
         digits = atlas.findRegions("digit");
-        grass = atlas.findRegion("background");
+        grass = atlas.findRegion("background");   
+        lairs = new Array<Lair>();
     }
         
     @Override
@@ -81,6 +85,10 @@ public class Tablero extends Group implements ITablero
 		    Celda nueva = grid[cj*columns+ci];
 		    nueva.setPiezaActual(p);
 		    p.setCeldaActual(nueva);
+		}		
+		if(actor instanceof Lair)
+		{
+			lairs.add((Lair)actor);
 		}
 		super.addActor(actor);
     }
@@ -93,6 +101,10 @@ public class Tablero extends Group implements ITablero
     		{
     			final IPieza p = (IPieza)actor;
     			p.getCeldaActual().setPiezaActual(null);    			    
+    		}    
+    		if(actor instanceof Lair)
+    		{
+    			lairs.removeValue((Lair)actor, true);
     		}
     		return true;
     	}
@@ -292,5 +304,10 @@ public class Tablero extends Group implements ITablero
 	{
 		return totalRecompensas;
 	}
-	
+
+	@Override
+	public Array<Lair> getLairs()
+	{
+		return lairs;
+	}	
 }

@@ -55,7 +55,7 @@ public class Celda
     	else return Disponible(k,m);        
     }
     
-    public boolean Disponible(Class<? extends IPieza> c,float x, float y) 
+    public boolean Disponible(Class<?> c,float x, float y) 
     {
     	int k = (int)(x/t.boxWidth())-i, m = (int)(y/t.boxHeight())-j;    	
     	if(k == 0 && m == 0) return true;
@@ -69,7 +69,7 @@ public class Celda
      * @param m m-esima fila a partir de esta celda.
      * @return True si la celda está disponible. False si la celda está ocupada por un tipo de pieza c.
      */
-	public boolean Disponible(Class<? extends IPieza> c, int k, int m)
+	public boolean Disponible(Class<?> c, int k, int m)
 	{
 		Celda siguiente = t.getCelda(i+k, j+m);
         return siguiente != null && (siguiente.Disponible()  || (!siguiente.Disponible() && !c.isInstance(siguiente.getPiezaActual())));
@@ -78,5 +78,11 @@ public class Celda
 	public Celda Obtener(int k, int m)
 	{
 		return t.getCelda(i+k, j+m);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("(%d, %d)", i, j);
 	}
 }

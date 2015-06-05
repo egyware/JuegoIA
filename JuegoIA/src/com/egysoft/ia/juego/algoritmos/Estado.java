@@ -1,4 +1,7 @@
-package com.egysoft.ia.juego.tablero;
+package com.egysoft.ia.juego.algoritmos;
+
+import com.egysoft.ia.juego.tablero.Celda;
+import com.egysoft.ia.juego.tablero.Operacion;
 
 /**
  * Guarda el estado de la busqueda

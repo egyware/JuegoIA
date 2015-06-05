@@ -2,6 +2,7 @@ package com.egysoft.ia.juego.loaders;
 
 import java.util.Scanner;
 
+import com.egysoft.ia.juego.actores.Coin;
 import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Enemy;
 import com.egysoft.ia.juego.actores.Lair;
@@ -46,7 +47,8 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		for(int j=rows-1;j>=0;j--)
 		{
 			final String line = scan.nextLine();
-			for(int i=0;i<columns;i++)				
+			final int len = line.length();
+			for(int i=0;i < columns && i < len;i++)				
 			{
 				char c = line.charAt(i);
 				switch(c)
@@ -70,6 +72,14 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 						Cube cube = new Cube("cube", atlas, cha_ching);
 						cube.setPosition(32*(i+0.25f), 32*(j+0.25f));
 						tablero.addActor(cube);
+						recompensas += 1;
+					}
+					break;
+					case 'c':
+					{
+						Coin coin = new Coin("cube", atlas, cha_ching);
+						coin.setPosition(32*(i+0.25f), 32*(j+0.25f));
+						tablero.addActor(coin);
 						recompensas += 1;
 					}
 					break;

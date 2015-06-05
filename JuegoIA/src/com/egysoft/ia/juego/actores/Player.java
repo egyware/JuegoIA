@@ -15,12 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.State;
+import com.egysoft.ia.juego.algoritmos.AStar;
 import com.egysoft.ia.juego.algoritmos.Algoritmo1;
+import com.egysoft.ia.juego.algoritmos.Estado;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.Estado;
 import com.egysoft.ia.juego.tablero.ITablero;
-import com.egysoft.ia.juego.tablero.Operacion;
 import com.egysoft.ia.juego.tablero.Pieza;
+import com.egysoft.ia.juego.tablero.Pushable;
 
 /**
  *
@@ -153,6 +154,7 @@ public class Player extends Pieza
     }
     
     private Algoritmo1 algoritmo = new Algoritmo1();
+    private AStar algoritmo2 = new AStar();
     Array<Estado> operaciones;
     Estado estado = null;
     @Override
@@ -160,40 +162,43 @@ public class Player extends Pieza
     {
     	final Celda actual = getCeldaActual();
     	
-    	do
-    	{
-	    	if(operaciones == null)
-			{
-	    		operaciones = algoritmo.buscar(actual);
-	    		if(operaciones == null)
-	    		{
-	    			//salir de este do-while si no encuentra nada
-	    			break; 
-	    		}
-	    		operaciones.pop();
-	    		System.out.println(operaciones);
-			}
-	    	
-	    	if(operaciones.size > 0)
-	    	{
-	    		if(estado == null || estado.celda == actual ) 
-				{
-	    			estado = operaciones.pop();
-	    			System.out.println(estado);
-				}    		
-	    	}
-	    	
-	    	if(estado != null)
-	    	{
-	    		Operacion op = estado.operacion;
-	    		if(!actual.Disponible(Wall.class, op.k, op.m))
-	    		{
-	    			operaciones = null;
-	    			estado = null;
-	    		}
-	    	}
-    	}while(operaciones == null);
-    	
+    	operaciones = algoritmo2.buscar(actual, actual.t.getLairs().first().getCeldaActual());
+    	operaciones.pop();
+    	estado = operaciones.pop();
+//    	do
+//    	{
+//	    	if(operaciones == null)
+//			{
+//	    		operaciones = algoritmo.buscar(actual);
+//	    		if(operaciones == null)
+//	    		{
+//	    			//salir de este do-while si no encuentra nada
+//	    			break; 
+//	    		}
+//	    		operaciones.pop();
+//	    		System.out.println(operaciones);
+//			}
+//	    	
+//	    	if(operaciones.size > 0)
+//	    	{
+//	    		if(estado == null || estado.celda == actual ) 
+//				{
+//	    			estado = operaciones.pop();
+//	    			System.out.println(estado);
+//				}    		
+//	    	}
+//	    	
+//	    	if(estado != null)
+//	    	{
+//	    		Operacion op = estado.operacion;
+//	    		if(!actual.Disponible(Wall.class, op.k, op.m))
+//	    		{
+//	    			operaciones = null;
+//	    			estado = null;
+//	    		}
+//	    	}
+//    	}while(operaciones == null);
+//    	
     	down = up = left = right = false;
 		if(estado != null)
 		{
@@ -310,11 +315,11 @@ public class Player extends Pieza
 					setState(idleState);				
 				}
 			}
-			if(!celda.Disponible(Cube.class, x-14, y))
+			if(!celda.Disponible(Pushable.class, x-14, y))
 			{
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x-14, y);
-				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				Pushable cubo = (Pushable)celdaCubo.getPiezaActual();
 				cubo.push(Player.this, -1, 0);
 			}
 			if(celda.Disponible(x-14,y))
@@ -364,11 +369,11 @@ public class Player extends Pieza
 				}
 			}
 			
-			if(!celda.Disponible(Cube.class, x+12, y))
+			if(!celda.Disponible(Pushable.class, x+12, y))
 			{
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x+12, y);
-				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				Pushable cubo = (Pushable)celdaCubo.getPiezaActual();
 				cubo.push(Player.this, 1, 0);
 			}
 			if(celda.Disponible(x+12, y))
@@ -417,11 +422,11 @@ public class Player extends Pieza
 					setState(idleState);				
 				}
 			}
-			if(!celda.Disponible(Cube.class, x, y-4))
+			if(!celda.Disponible(Pushable.class, x, y-4))
 			{
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x, y-4);
-				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				Pushable cubo = (Pushable)celdaCubo.getPiezaActual();
 				cubo.push(Player.this, 0, -1);
 			}
 			if(celda.Disponible(x, y-4))
@@ -471,11 +476,11 @@ public class Player extends Pieza
 					setState(idleState);				
 				}
 			}
-			if(!celda.Disponible(Cube.class, x, y+18))
+			if(!celda.Disponible(Pushable.class, x, y+18))
 			{
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x, y+18);
-				Cube cubo = (Cube)celdaCubo.getPiezaActual();
+				Pushable cubo = (Pushable)celdaCubo.getPiezaActual();
 				cubo.push(Player.this, 0, 1);
 			}
 			if(celda.Disponible(x, y+18))

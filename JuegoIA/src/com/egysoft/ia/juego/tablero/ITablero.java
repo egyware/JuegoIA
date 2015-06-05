@@ -1,5 +1,9 @@
 package com.egysoft.ia.juego.tablero;
 
+import com.badlogic.gdx.utils.Array;
+import com.egysoft.ia.juego.actores.Lair;
+
+
 /**
  *
  * @author Edgardo
@@ -29,6 +33,5 @@ public interface ITablero
 	int getTotalRecompensas();
 	int getRecompensas();
 	void gameEnd(String t);
-	
-    
+	Array<Lair> getLairs(); 
 }

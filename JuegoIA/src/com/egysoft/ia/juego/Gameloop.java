@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
@@ -50,11 +49,12 @@ public class Gameloop implements Screen
     {
         juego = j;
         
+        final String map = "assets/maps/map_02.txt";
         juego.assets.load("assets/game.atlas", TextureAtlas.class);
         juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
         juego.assets.load("assets/uiskin.json", Skin.class);
-        juego.assets.load("assets/maps/map_01.txt", Tablero.class);
+        juego.assets.load(map, Tablero.class);
         juego.assets.load("assets/music.mp3", Music.class);
         juego.assets.load("assets/ScreamAndDie.wav", Sound.class);
         juego.assets.load("assets/cha-ching.wav", Sound.class);
@@ -118,9 +118,12 @@ public class Gameloop implements Screen
 				if(celda != null)
 				{
 					IPieza pieza = celda.getPiezaActual();
-					if(pieza != null && !(pieza instanceof Player) )
+					if(pieza != null)
 					{
-						tablero.removeActor((Actor)pieza);
+						if(!(pieza instanceof Player))
+						{
+							tablero.removeActor((Actor)pieza);
+						}
 					}
 					else
 					{
@@ -150,7 +153,7 @@ public class Gameloop implements Screen
         });
         
         //se crea a partir de un archivo cargado previamente en assets
-        tablero = juego.assets.get("assets/maps/map_01.txt");
+        tablero = juego.assets.get(map);
         tablero.setGameloop(this);
         
         game.addActor(tablero);        
