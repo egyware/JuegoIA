@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.egysoft.ia.juego.Gameloop;
+import com.egysoft.ia.juego.actores.Coin;
+import com.egysoft.ia.juego.actores.Cube;
 import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
@@ -41,6 +43,8 @@ public class Tablero extends Group implements ITablero
     private final ActorComparator comparator = new ActorComparator();
     private final BitmapFont font;    
     private final Array<Lair> lairs;
+    private final Array<Cube> cubes;
+    private final Array<Coin> coins;
     private final TextureRegion box;
     private final TextureRegion grass;    
     private final Array<TextureAtlas.AtlasRegion> digits;
@@ -69,6 +73,8 @@ public class Tablero extends Group implements ITablero
         digits = atlas.findRegions("digit");
         grass = atlas.findRegion("background");   
         lairs = new Array<Lair>();
+        coins = new Array<Coin>();
+        cubes = new Array<Cube>();
     }
         
     @Override
@@ -90,6 +96,14 @@ public class Tablero extends Group implements ITablero
 		{
 			lairs.add((Lair)actor);
 		}
+		if(actor instanceof Coin)
+		{
+			coins.add((Coin)actor);
+		}
+		if(actor instanceof Cube)
+		{
+			cubes.add((Cube)actor);
+		}
 		super.addActor(actor);
     }
     @Override
@@ -105,6 +119,14 @@ public class Tablero extends Group implements ITablero
     		if(actor instanceof Lair)
     		{
     			lairs.removeValue((Lair)actor, true);
+    		}
+    		if(actor instanceof Coin)
+    		{
+    			coins.removeValue((Coin)actor,true);
+    		}
+    		if(actor instanceof Cube)
+    		{
+    			cubes.removeValue((Cube)actor,true);
     		}
     		return true;
     	}
@@ -309,5 +331,15 @@ public class Tablero extends Group implements ITablero
 	public Array<Lair> getLairs()
 	{
 		return lairs;
+	}
+	@Override
+	public Array<Coin> getCoins()
+	{
+		return coins;
 	}	
+	@Override
+	public Array<Cube> getCubes()
+	{
+		return cubes;
+	}
 }

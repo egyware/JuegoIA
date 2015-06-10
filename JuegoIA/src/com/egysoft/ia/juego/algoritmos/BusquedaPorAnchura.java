@@ -14,11 +14,11 @@ import com.egysoft.ia.juego.tablero.Operacion;
  * @author Edgardo
  *
  */
-public class Algoritmo1
+public class BusquedaPorAnchura
 {
 	private static final Operacion[] operaciones = {Operacion.Arriba, Operacion.Izquierda, Operacion.Abajo,Operacion.Derecha};
 
-	public Algoritmo1()
+	public BusquedaPorAnchura()
 	{		
 	}
 	
@@ -31,7 +31,7 @@ public class Algoritmo1
 		//he revisado Array.java y add corresponde a push ya que lo añade al final del arreglo
 		//https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/utils/Array.java
 		//15-05-2015 Me acabo de dar cuenta que utilizaba una pila y no una cola. Bueno estoy utilizando LinkedList de java.utils
-		cola.add(new Estado(inicial));
+		cola.push(new Estado(inicial));
 		
 		while(cola.size() > 0)
 		{
@@ -59,7 +59,7 @@ public class Algoritmo1
 				{
 					if(!agenda.containsKey(proxima))
 					{
-						cola.add(new Estado(proxima, operacion, actual));
+						cola.push(new Estado(proxima, operacion, actual));
 					}
 				}
 			}			

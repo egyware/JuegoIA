@@ -15,8 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.State;
-import com.egysoft.ia.juego.algoritmos.AStar;
-import com.egysoft.ia.juego.algoritmos.Algoritmo1;
+import com.egysoft.ia.juego.algoritmos.BusquedaAStar;
+import com.egysoft.ia.juego.algoritmos.Busqueda;
+import com.egysoft.ia.juego.algoritmos.BusquedaPorProfundidad;
 import com.egysoft.ia.juego.algoritmos.Estado;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.ITablero;
@@ -153,8 +154,37 @@ public class Player extends Pieza
         });
     }
     
-    private Algoritmo1 algoritmo = new Algoritmo1();
-    private AStar algoritmo2 = new AStar();
+    private Busqueda algoritmo = new BusquedaPorProfundidad();
+    private Busqueda algoritmo2 = new BusquedaAStar(
+    new BusquedaAStar.G() 
+    {		
+		@Override
+		public int g(int costo, Celda actual) 
+		{
+			return costo+1;
+		}
+	},
+	new BusquedaAStar.H()
+	{
+		@Override
+		public int h(Celda actual) 
+		{
+			int h1=0,h2=0;
+			Array<Lair> lairs = getCeldaActual().t.getLairs();
+			for(Lair lair:lairs)
+			{
+				final Celda celda = lair.getCeldaActual();
+				h1+= Math.abs(actual.i - celda.i) + Math.abs(actual.j-celda.j);
+			}			
+			Array<Coin> coins = getCeldaActual().t.getCoins();
+			for(Coin coin:coins)
+			{
+				final Celda celda = coin.getCeldaActual();
+				h2+= Math.abs(actual.i - celda.i) + Math.abs(actual.j-celda.j);
+			}			
+			return (int)(h1*0.8f+h2*0.2f);
+		}		
+	});
     Array<Estado> operaciones;
     Estado estado = null;
     @Override
@@ -162,9 +192,12 @@ public class Player extends Pieza
     {
     	final Celda actual = getCeldaActual();
     	
-    	operaciones = algoritmo2.buscar(actual, actual.t.getLairs().first().getCeldaActual());
-    	operaciones.pop();
-    	estado = operaciones.pop();
+    	operaciones = algoritmo.buscar(actual, actual.t.getLairs().first().getCeldaActual());
+    	if(operaciones != null && operaciones.size > 1)
+    	{
+    		operaciones.pop();
+    		estado = operaciones.pop();
+    	}
 //    	do
 //    	{
 //	    	if(operaciones == null)
