@@ -12,11 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.IPlayer;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
-import com.egysoft.ia.juego.tablero.Pushable;
+import com.egysoft.ia.juego.tablero.IPushable;
 
-public class Cube extends Pieza implements Pushable
+public class Cube extends Pieza implements IPushable
 {
 	private static Random random = new Random(System.currentTimeMillis());
 	private TextureRegion texture;
@@ -82,7 +83,7 @@ public class Cube extends Pieza implements Pushable
 			if(otro.push(this,k, m)) return true;			
 			else 
 			{
-				if(pieza instanceof Player) //nop, no está isdisponible
+				if(pieza instanceof IPlayer) //nop, no está isdisponible
 				{
 					final Player p = (Player)pieza;
 					p.push(this, k, m);
@@ -105,9 +106,9 @@ public class Cube extends Pieza implements Pushable
 			));
 			return true;
 		}
-		else if(pieza instanceof Player) //nop, no está isdisponible
+		else if(pieza instanceof IPlayer) //nop, no está isdisponible
 		{
-			final Player p = (Player)pieza;
+			final IPlayer p = (IPlayer)pieza;
 			p.push(this, k, m);
 			isPushing = true;			
 			addAction(Actions.sequence

@@ -61,7 +61,7 @@ public class Celda
     	if(k == 0 && m == 0) return true;
     	else return Disponible(c,k,m);        
     }
-
+   
     /**
      * Pregunta si la celda siguiente k,m esta disponible.
      * @param c El tipo de la pieza que debe contener la celda para considerarla ocupada. 
@@ -74,6 +74,11 @@ public class Celda
 		Celda siguiente = t.getCelda(i+k, j+m);
         return siguiente != null && (siguiente.Disponible()  || (!siguiente.Disponible() && !c.isInstance(siguiente.getPiezaActual())));
 	}
+	
+	public boolean Disponible(Class<?> c)
+    {
+    	return pieza == null || !(c.isInstance(pieza));
+    }
 	
 	public Celda Obtener(int k, int m)
 	{

@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.Operacion;
@@ -39,7 +38,7 @@ public class BusquedaPorProfundidad implements Busqueda
 			agenda.put(actual.celda, actual); //lo guardo en nuestra agenda o historial
 			
 			//este es nuestro estado final
-			if(actual.celda.getPiezaActual() instanceof Lair)
+			if(actual.celda == destino)
 			{
 				//devuelvo lo primero que pille
 				final Array<Estado> resultado = new Array<Estado>();
@@ -55,7 +54,7 @@ public class BusquedaPorProfundidad implements Busqueda
 			for(Operacion operacion: operaciones) //por cada operacion reviso si existen celdas adyacentes
 			{
 				Celda proxima = actual.celda.Obtener(operacion.k, operacion.m);
-				if(proxima != null && !(proxima.getPiezaActual() instanceof Wall))
+				if(proxima != null && !proxima.Disponible(Wall.class))
 				{
 					if(!agenda.containsKey(proxima))
 					{

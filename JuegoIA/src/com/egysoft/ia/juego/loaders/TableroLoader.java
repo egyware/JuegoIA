@@ -42,7 +42,7 @@ public class TableroLoader extends SynchronousAssetLoader<Tablero, TableroLoader
 		int recompensas = 0;
 		scan.nextLine();
 		
-		tablero = new Tablero(assets, columns, rows, 32,32);
+		tablero = new Tablero(assets, columns, rows, Tablero.ColumnWidth,Tablero.ColumnHeight);
 		
 		for(int j=rows-1;j>=0;j--)
 		{

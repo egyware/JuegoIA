@@ -11,11 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.IPlayer;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
-import com.egysoft.ia.juego.tablero.Pushable;
+import com.egysoft.ia.juego.tablero.IPushable;
 
-public class Coin extends Pieza implements Pushable
+public class Coin extends Pieza implements IPushable
 {
 	private static Random random = new Random(System.currentTimeMillis());
 	private TextureRegion texture;
@@ -40,7 +41,7 @@ public class Coin extends Pieza implements Pushable
 	public boolean push(IPieza pieza, int k, int m)
 	{
 		if(isPushing == true) return true;
-		if(pieza instanceof Player)
+		if(pieza instanceof IPlayer)
 		{
 			isPushing = true;
 			final ITablero t = getCeldaActual().t;

@@ -21,10 +21,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.egysoft.ia.juego.actores.Player;
+import com.egysoft.ia.juego.actores.IAPlayer;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.IPlayer;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -49,7 +50,7 @@ public class Gameloop implements Screen
     {
         juego = j;
         
-        final String map = "assets/maps/map_02.txt";
+        final String map = "assets/maps/map_01.txt";
         juego.assets.load("assets/game.atlas", TextureAtlas.class);
         juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
@@ -120,7 +121,7 @@ public class Gameloop implements Screen
 					IPieza pieza = celda.getPiezaActual();
 					if(pieza != null)
 					{
-						if(!(pieza instanceof Player))
+						if(!(pieza instanceof IPlayer))
 						{
 							tablero.removeActor((Actor)pieza);
 						}
@@ -158,8 +159,14 @@ public class Gameloop implements Screen
         
         game.addActor(tablero);        
         
-        Player player;
-        player = new Player("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+//        Player player;
+//        player = new Player("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+//        game.setKeyboardFocus(player);
+//        tablero.addActor(player);
+//        controller.follow(player);
+        
+        IAPlayer player;
+        player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
         game.setKeyboardFocus(player);
         tablero.addActor(player);
         controller.follow(player);

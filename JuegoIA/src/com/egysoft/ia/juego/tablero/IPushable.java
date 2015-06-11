@@ -5,7 +5,7 @@ package com.egysoft.ia.juego.tablero;
  * @author Edgardo
  *
  */
-public interface Pushable 
+public interface IPushable 
 {
 	boolean push(IPieza pieza, int k, int m);
 }

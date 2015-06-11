@@ -11,12 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.egysoft.ia.juego.Gameloop;
-import com.egysoft.ia.juego.actores.Coin;
-import com.egysoft.ia.juego.actores.Cube;
-import com.egysoft.ia.juego.actores.Lair;
-import com.egysoft.ia.juego.actores.Player;
 import com.egysoft.ia.juego.actores.Wall;
 
 /**
@@ -25,7 +22,9 @@ import com.egysoft.ia.juego.actores.Wall;
  */
 public class Tablero extends Group implements ITablero
 {
-    private boolean debug;
+    public static final int ColumnWidth  = 32;
+    public static final int ColumnHeight = 32;
+	private boolean debug;
     private boolean pausa;
     public static class ActorComparator implements Comparator<Actor> 
     {
@@ -42,9 +41,7 @@ public class Tablero extends Group implements ITablero
     private final Celda grid[];
     private final ActorComparator comparator = new ActorComparator();
     private final BitmapFont font;    
-    private final Array<Lair> lairs;
-    private final Array<Cube> cubes;
-    private final Array<Coin> coins;
+    private final ObjectMap<Class<? extends IPieza>,Array<IPieza>> piezas;    
     private final TextureRegion box;
     private final TextureRegion grass;    
     private final Array<TextureAtlas.AtlasRegion> digits;
@@ -72,17 +69,16 @@ public class Tablero extends Group implements ITablero
         box = atlas.findRegion("box");
         digits = atlas.findRegions("digit");
         grass = atlas.findRegion("background");   
-        lairs = new Array<Lair>();
-        coins = new Array<Coin>();
-        cubes = new Array<Cube>();
+        piezas = new ObjectMap<Class<? extends IPieza>,Array<IPieza>>();
+        
     }
         
     @Override
     public void addActor(Actor actor)
     {
-    	if(actor instanceof Player)
+    	if(actor instanceof IPlayer)
     	{
-    		actor.setPosition(xi, yi);    		
+    		actor.setPosition(xi+Tablero.ColumnWidth/2, yi+Tablero.ColumnHeight/2);    		
     	}
 		if(actor instanceof IPieza)
 		{
@@ -91,19 +87,16 @@ public class Tablero extends Group implements ITablero
 		    Celda nueva = grid[cj*columns+ci];
 		    nueva.setPiezaActual(p);
 		    p.setCeldaActual(nueva);
-		}		
-		if(actor instanceof Lair)
-		{
-			lairs.add((Lair)actor);
-		}
-		if(actor instanceof Coin)
-		{
-			coins.add((Coin)actor);
-		}
-		if(actor instanceof Cube)
-		{
-			cubes.add((Cube)actor);
-		}
+		    
+		    Array<IPieza> data = piezas.get(p.getClass());
+		    if(data == null)
+		    {
+		    	data = new Array<IPieza>();
+		    	piezas.put(p.getClass(), data);
+		    }
+		    data.add(p);
+		}	
+		
 		super.addActor(actor);
     }
     @Override
@@ -114,19 +107,13 @@ public class Tablero extends Group implements ITablero
     		if(actor instanceof IPieza)
     		{
     			final IPieza p = (IPieza)actor;
-    			p.getCeldaActual().setPiezaActual(null);    			    
-    		}    
-    		if(actor instanceof Lair)
-    		{
-    			lairs.removeValue((Lair)actor, true);
-    		}
-    		if(actor instanceof Coin)
-    		{
-    			coins.removeValue((Coin)actor,true);
-    		}
-    		if(actor instanceof Cube)
-    		{
-    			cubes.removeValue((Cube)actor,true);
+    			p.getCeldaActual().setPiezaActual(null);
+    			
+    			Array<IPieza> data = piezas.get(p.getClass());
+    		    if(data != null)
+    		    {
+    		    	data.removeValue(p, true);
+    		    }    		    
     		}
     		return true;
     	}
@@ -326,20 +313,11 @@ public class Tablero extends Group implements ITablero
 	{
 		return totalRecompensas;
 	}
-
+	
 	@Override
-	public Array<Lair> getLairs()
+	@SuppressWarnings("unchecked")	
+	public <T extends IPieza> Array<T> get(Class<T> c)
 	{
-		return lairs;
-	}
-	@Override
-	public Array<Coin> getCoins()
-	{
-		return coins;
+		return (Array<T>) piezas.get(c);
 	}	
-	@Override
-	public Array<Cube> getCubes()
-	{
-		return cubes;
-	}
 }

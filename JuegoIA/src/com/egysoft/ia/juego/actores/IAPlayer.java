@@ -1,6 +1,7 @@
 package com.egysoft.ia.juego.actores;
 
-import com.badlogic.gdx.Input.Keys;
+import java.util.Comparator;
+
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -9,25 +10,38 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.State;
+import com.egysoft.ia.juego.algoritmos.Busqueda;
+import com.egysoft.ia.juego.algoritmos.BusquedaAStar;
+import com.egysoft.ia.juego.algoritmos.BusquedaPorAnchura;
+import com.egysoft.ia.juego.algoritmos.BusquedaPorProfundidad;
+import com.egysoft.ia.juego.algoritmos.Estado;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPlayer;
 import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
+import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
  *
  * @author Edgardo
  */
-public class Player extends Pieza implements IPlayer
+public class IAPlayer extends Pieza implements IPlayer
 {
-	private static final float velocity = 50.0f;
+	private static final float velocity = 30.0f; // 50 pix/s
+	private static final float movtime = 32/velocity; // 32 pix / 50 pix/s
+	private static final Comparator<Array<Estado>> masCorto = new Comparator<Array<Estado>>()
+	{
+		@Override
+		public int compare(Array<Estado> arg0, Array<Estado> arg1) 
+		{
+			return arg0.size - arg1.size;
+		}
+	};
 	
 	private final Sound sound;
 	private final Animation upAnimation;
@@ -44,10 +58,9 @@ public class Player extends Pieza implements IPlayer
     private final NullState nullState;
     private State currentState;
     
-	private float time;
-    public boolean left, right,up, down;
+	private float time;    
     
-    public Player(String assetName, TextureAtlas atlas, Sound sound)
+    public IAPlayer(String assetName, TextureAtlas atlas, Sound sound)
     {
     	Array<AtlasRegion> regions;
         Array<TextureRegion> array = new Array<>(4);
@@ -92,68 +105,52 @@ public class Player extends Pieza implements IPlayer
         nullState = new NullState();
         selected = downAnimation; //deje este para el ultimo
         
+        popEstado = new PopEstado();
+        
         this.sound = sound;
         
-        setState(idleState);
-        
-        addListener(new InputListener()
-        {
-            @Override
-            public boolean keyDown(InputEvent event, int keycode)
-            {
-                  if(Keys.LEFT == keycode) 
-                  {
-                	  left = true;
-                      return true;
-                  }
-                  if(Keys.RIGHT == keycode) 
-                  {
-                	  right = true;
-                      return true;
-                  }
-                  if(Keys.UP == keycode) 
-                  {
-                      up = true;
-                      return true;
-                  }
-                  if(Keys.DOWN == keycode) 
-                  {
-                      down = true;
-                      return true;
-                  }
-                  return false;
-            }
-            @Override
-            public boolean keyUp(InputEvent event, int keycode)
-            {
-                  if(Keys.LEFT == keycode) 
-                  {
-                      left = false;
-                      return true;
-                  }
-                  if(Keys.RIGHT == keycode) 
-                  {
-                	  right = false;
-                      return true;
-                  }
-                  if(Keys.UP == keycode) 
-                  {
-                      up = false;
-                      return true;
-                  }
-                  if(Keys.DOWN == keycode) 
-                  {
-                      down = false;
-                      return true;
-                  }
-                  return false;
-            }
-        });
+        setState(idleState);             
     }
     
+    //private Busqueda algoritmo = new BusquedaPorAnchura();
+    private Busqueda algoritmo = new BusquedaAStar(
+    new BusquedaAStar.G() 
+    {		
+		@Override
+		public int g(int costo, Celda actual) 
+		{
+			return costo+1;
+		}
+	},
+	new BusquedaAStar.H()
+	{
+		@Override
+		public int h(Celda actual) 
+		{
+			int h1=0,h2=0;
+			Array<Lair> lairs = getCeldaActual().t.get(Lair.class);
+			for(Lair lair:lairs)
+			{
+				final Celda celda = lair.getCeldaActual();
+				h1+= Math.abs(actual.i - celda.i) + Math.abs(actual.j-celda.j);
+			}			
+			Array<Cube> cube = getCeldaActual().t.get(Cube.class);
+			for(Cube coin:cube)
+			{
+				final Celda celda = coin.getCeldaActual();
+				h2+= Math.abs(actual.i - celda.i) + Math.abs(actual.j-celda.j);
+			}		
+			
+			return (int)(h1*0.9f+h2*0.1f);
+		}		
+	});
+    private final PopEstado popEstado;
+    private Array<Estado> operaciones;
+    private Estado estado = null;
     @Override
     public void	act(float delta)
     {
+    	time += delta;
     	currentState.update(delta);
         super.act(delta);
     }
@@ -189,26 +186,28 @@ public class Player extends Pieza implements IPlayer
 
 		@Override
 		public void update(float delta) 
-		{			
-			if(left)
-			{
-				setState(leftState);
-			}
-			else
-			if(right)
-			{
-				setState(rightState);
-			}
-			else
-			if(up)
-			{
-				setState(upState);								
-			}			
-			else
-			if(down)
-			{
-				setState(downState);				
-			}			
+		{	
+			final Celda actual = getCeldaActual();
+			
+			//Array<Array<Estado>> caminos = new Array<Array<Estado>>();
+			
+			Array<Cube> cubes = actual.t.get(Cube.class);
+			
+			if(cubes.size > 0) operaciones = algoritmo.buscar(actual, cubes.first().getCeldaActual());			
+    				
+    		if(operaciones == null)
+    		{
+    			//HACER QUE NO SABES x'D
+    		}	    		
+    		
+    		System.out.println(operaciones);			
+	    	
+	    	if(operaciones != null && operaciones.size > 0)
+	    	{
+	    		operaciones.pop();	    		
+	    		clearActions();
+	    		addAction(popEstado);
+	    	}	    	
 		}    	
     }
     public class LeftState implements State
@@ -223,44 +222,25 @@ public class Player extends Pieza implements IPlayer
 		@Override
 		public void update(float delta) 
 		{		
-			final Celda celda = getCeldaActual();
-			final float x = getX(), y = getY();			
-			if(!left)
-			{				
-				if(right)
-				{
-					setState(rightState);
-				}
-				else
-				if(up)
-				{
-					setState(upState);
-				}
-				else
-				if(down)
-				{
-					setState(upState);
-				}
-				else
-				{
-					setState(idleState);				
-				}
-			}
-			if(!celda.Disponible(IPushable.class, x-14, y))
+			final Celda celda = estado.celda;
+			
+			if(!celda.Disponible(IPushable.class))
 			{
-				//ohh!!! un cubo!!! que hacemos con el?
-				Celda celdaCubo = celda.t.getCelda(x-14, y);
-				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, -1, 0);
+				//ohh!!! un cubo!!! que hacemos con el?				
+				IPushable cubo = (IPushable)celda.getPiezaActual();
+				if(cubo.push(IAPlayer.this, -1, 0)) return;				
 			}
-			if(celda.Disponible(x-14,y))
+			
+			if(celda.Disponible())
 			{
-				time += delta;
-				setX(x-velocity*delta);
+				addAction(Actions.sequence(
+						Actions.moveTo(estado.celda.x+Tablero.ColumnWidth/2, estado.celda.y+Tablero.ColumnHeight/2, movtime),
+						popEstado));
+				setState(nullState);
 			}
 			else
 			{
-				time = 0;
+				setState(idleState);
 			}
 		}    	
     }
@@ -276,46 +256,25 @@ public class Player extends Pieza implements IPlayer
 		@Override
 		public void update(float delta) 
 		{		
-			final Celda celda = getCeldaActual();
-			final float x = getX(), y = getY();			
-			if(!right)
-			{				
-				if(left)
-				{
-					setState(leftState);
-				}
-				else
-				if(up)
-				{
-					setState(upState);
-				}
-				else
-				if(down)
-				{
-					setState(upState);
-				}
-				else
-				{
-					setState(idleState);				
-				}
-			}
+			final Celda celda = estado.celda;
 			
-			if(!celda.Disponible(IPushable.class, x+12, y))
+			if(!celda.Disponible(IPushable.class))
 			{
-				//ohh!!! un cubo!!! que hacemos con el?
-				Celda celdaCubo = celda.t.getCelda(x+12, y);
-				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 1, 0);
+				//ohh!!! un cubo!!! que hacemos con el?				
+				IPushable cubo = (IPushable)celda.getPiezaActual();
+				if(cubo.push(IAPlayer.this, 1, 0)) return;
 			}
-			if(celda.Disponible(x+12, y))
+			if(celda.Disponible())
 			{
-				time += delta;
-				setX(x+velocity*delta);
+				addAction(Actions.sequence(
+						Actions.moveTo(estado.celda.x+Tablero.ColumnWidth/2, estado.celda.y+Tablero.ColumnHeight/2, movtime),
+						popEstado));
+				setState(nullState);
 			}
 			else
 			{
-				time = 0;
-			}			
+				setState(idleState);
+			}
 		}    	
     }
     public class DownState implements State
@@ -330,46 +289,25 @@ public class Player extends Pieza implements IPlayer
 		@Override
 		public void update(float delta) 
 		{		
-			final Celda celda = getCeldaActual();
-			final float x = getX(), y = getY();
-			if(!down)
-			{				
-				if(left)
-				{
-					setState(leftState);
-				}
-				else
-				if(up)
-				{
-					setState(upState);
-				}
-				else
-				if(right)
-				{
-					setState(rightState);
-				}
-				else
-				{
-					setState(idleState);				
-				}
-			}
-			if(!celda.Disponible(IPushable.class, x, y-4))
+			final Celda celda = estado.celda;
+			
+			if(!celda.Disponible(IPushable.class))
 			{
-				//ohh!!! un cubo!!! que hacemos con el?
-				Celda celdaCubo = celda.t.getCelda(x, y-4);
-				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 0, -1);
+				//ohh!!! un cubo!!! que hacemos con el?				
+				IPushable cubo = (IPushable)celda.getPiezaActual();
+				if(cubo.push(IAPlayer.this, 0, -1))return;
 			}
-			if(celda.Disponible(x, y-4))
+			if(celda.Disponible())
 			{
-				time += delta;
-				setY(getY()-velocity*delta);
+				addAction(Actions.sequence(
+						Actions.moveTo(estado.celda.x+Tablero.ColumnWidth/2, estado.celda.y+Tablero.ColumnHeight/2, movtime),
+						popEstado));
+				setState(nullState);
 			}
 			else
 			{
-				time = 0;
+				setState(idleState);
 			}
-			
 		}    	
     }
     public class UpState implements State
@@ -384,46 +322,25 @@ public class Player extends Pieza implements IPlayer
 		@Override
 		public void update(float delta) 
 		{	
-			final Celda celda = getCeldaActual();
-			final float x = getX(), y = getY();
-			if(!up)
-			{				
-				if(left)
-				{
-					setState(leftState);
-				}
-				else
-				if(down)
-				{
-					setState(downState);
-				}
-				else
-				if(right)
-				{
-					setState(rightState);
-				}
-				else
-				{
-					setState(idleState);				
-				}
-			}
-			if(!celda.Disponible(IPushable.class, x, y+18))
+			final Celda celda = estado.celda;
+			
+			if(!celda.Disponible(IPushable.class))
 			{
-				//ohh!!! un cubo!!! que hacemos con el?
-				Celda celdaCubo = celda.t.getCelda(x, y+18);
-				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 0, 1);
+				//ohh!!! un cubo!!! que hacemos con el?				
+				IPushable cubo = (IPushable)celda.getPiezaActual();
+				if(cubo.push(IAPlayer.this, 0, 1)) return;
 			}
-			if(celda.Disponible(x, y+18))
+			if(celda.Disponible())
 			{
-				time += delta;
-				setY(getY()+velocity*delta);
+				addAction(Actions.sequence(
+						Actions.moveTo(estado.celda.x+Tablero.ColumnWidth/2, estado.celda.y+Tablero.ColumnHeight/2, movtime),
+						popEstado));
+				setState(nullState);
 			}
 			else
 			{
-				time = 0;
+				setState(idleState);
 			}
-			
 		}    	
     }
     public class NullState implements State
@@ -436,13 +353,49 @@ public class Player extends Pieza implements IPlayer
 		@Override
 		public void update(float delta) 
 		{			
-		}
-    	
+		}    	
     }
+    public class PopEstado extends Action
+    {
+		@Override
+		public boolean act(float arg0) 
+		{
+			if(operaciones != null && operaciones.size > 0)
+			{
+				estado = operaciones.pop();
+				System.out.println(estado);
+    			switch(estado.operacion)
+    	    	{
+    			case Abajo:		
+    				setState(downState);
+    				break;
+    			case Arriba:			
+    				setState(upState);			
+    				break;
+    			case Derecha:			
+    				setState(rightState);	
+    				break;		
+    			case Izquierda:
+    				setState(leftState);	
+    				break;
+    			case Inicial:	    				
+    				break;
+    			default:
+    				break;    	
+    	    	}
+			}
+			else
+			{
+				setState(idleState);
+			}
+			return true;
+		}    	
+    }
+    
 	public void push(Pieza by, int k, int m) 
 	{
 		final ITablero t = getCeldaActual().t;
-		disableInput(true);
+		setState(nullState);
 		addAction(Actions.sequence
 		(
 			Actions.moveBy(k*t.boxWidth(), m*t.boxHeight(), 0.5f),
@@ -451,34 +404,20 @@ public class Player extends Pieza implements IPlayer
 				@Override
 				public boolean act(float arg0) 
 				{
-					disableInput(false);
+					setState(idleState);
 					return true;
 				}						
 			}
 		));		
 	}
 	
-	//aqui seria util una maquina de estados con pila, pero no es necesario
-	private State lastState;
-	private void disableInput(boolean b) 
-	{
-		if(b)
-		{
-			lastState = currentState;
-			setState(nullState);
-		}
-		else
-		{
-			currentState = lastState;
-		}		
-	}
-
+	
 	private boolean isHunted;
 	public void hunted(Enemy enemy)
 	{
 		if(isHunted) return;
 		isHunted = true;
-		disableInput(true);
+		
 		sound.play(Config.instance.getVolume());
 		addAction(Actions.sequence
 		(
@@ -492,7 +431,6 @@ public class Player extends Pieza implements IPlayer
 					return true;
 				}
 			}			
-		));
-		
+		));		
 	}    
 }

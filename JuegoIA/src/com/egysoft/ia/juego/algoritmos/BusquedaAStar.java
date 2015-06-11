@@ -4,11 +4,13 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.egysoft.ia.juego.actores.Coin;
 import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.Operacion;
 
 public class BusquedaAStar implements Busqueda
@@ -35,6 +37,7 @@ public class BusquedaAStar implements Busqueda
 		this.g = g;
 		this.h = h;
 		this.c = c;
+		queue = new PriorityQueue<EstadoCosto>(c);
 	}
 	
 	public BusquedaAStar(G g, H h)
@@ -49,20 +52,24 @@ public class BusquedaAStar implements Busqueda
 				return a.costo - b.costo;
 			}			
 		};
+		queue = new PriorityQueue<EstadoCosto>(c);
 	}
 		
+	final PriorityQueue<EstadoCosto> queue;
+	final ObjectMap<Celda, Estado> agenda = new ObjectMap<Celda, Estado>(); //o historial	
 	public Array<Estado> buscar(Celda inicial, Celda destino)
 	{
-		final PriorityQueue<EstadoCosto> queue = new PriorityQueue<EstadoCosto>(c);
+		queue.clear();
+		agenda.clear();
 		queue.add(new EstadoCosto(inicial));
 		
 		while(queue.size() > 0)
 		{
 			System.out.println(String.format("Cola: %s", queue.toString()));
 			final EstadoCosto actual = queue.poll();
-			
+			agenda.put(actual.celda, actual); //lista cerrados			
 			IPieza pieza = actual.celda.getPiezaActual();
-			if(pieza instanceof Coin || pieza instanceof Lair)
+			if(pieza instanceof IPushable || pieza instanceof Lair)
 			{
 				final Array<Estado> resultado = new Array<Estado>();
 				Estado aux = actual;
@@ -77,6 +84,7 @@ public class BusquedaAStar implements Busqueda
 			for(Operacion operacion:operaciones)
 			{
 				Celda proxima = actual.celda.Obtener(operacion.k, operacion.m);
+				if(agenda.containsKey(proxima)) continue;
 				if(proxima != null && !(proxima.getPiezaActual() instanceof Wall))
 				{
 					EstadoCosto ec = new EstadoCosto(proxima, operacion, actual, g(actual.costo, proxima)+h(proxima));
