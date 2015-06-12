@@ -179,19 +179,19 @@ public class Tablero extends Group implements ITablero
     		}
     		super.draw(batch, parentAlfa);    		
     		drawDebugTablero(batch);    		
-    		SnapshotArray<Actor> snapshotArray = getChildren();
-		    Actor childrens[] = snapshotArray.begin();
-    		for(Actor c:childrens) 
-  		    {
-  		        if(c instanceof IPieza && !(c instanceof Wall))
-  		        {  		        	
-	        		Celda celda = ((IPieza)c).getCeldaActual();
-	        		float x = c.getX(), y = c.getY();  		        	
-	        		font.draw(batch, String.format("%s(%.0f,%.0f)", c.toString(),x,y), x, y);  		        	
-	        		font.draw(batch, String.format("Celda(%d,%d)",celda.i, celda.j), x, y-18);  		        	
-  		        }
-  		    }
-    		snapshotArray.end();   	
+//    		SnapshotArray<Actor> snapshotArray = getChildren();
+//		    Actor childrens[] = snapshotArray.begin();
+//    		for(Actor c:childrens) 
+//  		    {
+//  		        if(c instanceof IPieza && !(c instanceof Wall))
+//  		        {  		        	
+//	        		Celda celda = ((IPieza)c).getCeldaActual();
+//	        		float x = c.getX(), y = c.getY();  		        	
+//	        		font.draw(batch, String.format("%s(%.0f,%.0f)", c.toString(),x,y), x, y);  		        	
+//	        		font.draw(batch, String.format("Celda(%d,%d)",celda.i, celda.j), x, y-18);  		        	
+//  		        }
+//  		    }
+//    		snapshotArray.end();   	
     	}
     	else
     	{

@@ -5,12 +5,8 @@ import java.util.PriorityQueue;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.egysoft.ia.juego.actores.Coin;
-import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.IPieza;
-import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.Operacion;
 
 public class BusquedaAStar implements Busqueda
@@ -65,11 +61,11 @@ public class BusquedaAStar implements Busqueda
 		
 		while(queue.size() > 0)
 		{
-			System.out.println(String.format("Cola: %s", queue.toString()));
+			//System.out.println(String.format("Cola: %s", queue.toString()));
 			final EstadoCosto actual = queue.poll();
 			agenda.put(actual.celda, actual); //lista cerrados			
-			IPieza pieza = actual.celda.getPiezaActual();
-			if(pieza instanceof IPushable || pieza instanceof Lair)
+			
+			if(actual.celda == destino)
 			{
 				final Array<Estado> resultado = new Array<Estado>();
 				Estado aux = actual;
@@ -80,7 +76,7 @@ public class BusquedaAStar implements Busqueda
 				}				
 				return resultado;	
 			}
-			System.out.println(String.format("Visitando: %s",actual.toString()));
+			//System.out.println(String.format("Visitando: %s",actual.toString()));
 			for(Operacion operacion:operaciones)
 			{
 				Celda proxima = actual.celda.Obtener(operacion.k, operacion.m);
@@ -88,7 +84,7 @@ public class BusquedaAStar implements Busqueda
 				if(proxima != null && !(proxima.getPiezaActual() instanceof Wall))
 				{
 					EstadoCosto ec = new EstadoCosto(proxima, operacion, actual, g(actual.costo, proxima)+h(proxima));
-					System.out.printf("Añadiendo: %15s = f(%d) + h(%d)\n", ec, g(actual.costo, proxima),h(proxima));
+					//System.out.printf("Añadiendo: %15s = f(%d) + h(%d)\n", ec, g(actual.costo, proxima),h(proxima));
 					queue.add(ec);
 				}
 			}

@@ -10,6 +10,7 @@ public class Config
 	public static Config instance;
 	private float volume = 1;
 	private int enemyIntelligence = 0;
+	private boolean debug = true;
 	private AssetManager assets; 
 	
 	public Config(AssetManager assets)
@@ -51,7 +52,12 @@ public class Config
 		this.enemyIntelligence = i;
 		Enemy.velocity = 50 + 10*i;    	
 	}
-	
-	
-
+	public boolean isDebug()
+	{
+		return debug;
+	}
+	public void setDebug(boolean b)
+	{
+		debug = b;
+	}
 }

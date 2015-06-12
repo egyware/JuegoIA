@@ -1,8 +1,9 @@
 package com.egysoft.ia.juego;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -10,7 +11,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -21,11 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.egysoft.ia.juego.actores.Ficha;
 import com.egysoft.ia.juego.actores.IAPlayer;
-import com.egysoft.ia.juego.actores.Wall;
-import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.IPieza;
-import com.egysoft.ia.juego.tablero.IPlayer;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -46,11 +43,11 @@ public class Gameloop implements Screen
     private ShaderProgram basicShader;
     private Music music;
     
-    public Gameloop(JuegoIA j)
+    public Gameloop(JuegoIA juego)
     {
-        juego = j;
+        this.juego = juego;
         
-        final String map = "assets/maps/map_01.txt";
+        final String map = "assets/maps/map_certamen.txt";
         juego.assets.load("assets/game.atlas", TextureAtlas.class);
         juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
@@ -75,83 +72,7 @@ public class Gameloop implements Screen
         final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
         setGUI();
         
-        multiplexor = new InputMultiplexer(hud, game, new InputProcessor()
-        {
-			@Override
-			public boolean keyDown(int arg0) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean keyTyped(char arg0) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean keyUp(int arg0) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean mouseMoved(int arg0, int arg1) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean scrolled(int arg0) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			private Vector3 tmp = new Vector3();
-			@Override
-			public boolean touchDown(int x, int y, int arg2, int arg3)
-			{
-				tmp.set(x, y, 0);
-				game.getCamera().unproject(tmp);
-				final int w = tablero.boxWidth, h = tablero.boxHeight;
-				final int i = (int) (tmp.x/w), j = (int) (tmp.y/h);				
-				Celda celda = tablero.getCelda(i, j);
-				if(celda != null)
-				{
-					IPieza pieza = celda.getPiezaActual();
-					if(pieza != null)
-					{
-						if(!(pieza instanceof IPlayer))
-						{
-							tablero.removeActor((Actor)pieza);
-						}
-					}
-					else
-					{
-						Wall wall = new Wall("sand_wall", atlas);
-						wall.setPosition(i*w, j*h);
-						tablero.addActor(wall);
-					}
-					return true;
-				}
-				return false;
-			}
-
-			@Override
-			public boolean touchDragged(int arg0, int arg1, int arg2) 
-			{
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean touchUp(int arg0, int arg1, int arg2, int arg3) 
-			{
-				// TODO Auto-generated method stub
-				return false;
-			}
-        
-        });
+        multiplexor = new InputMultiplexer(hud, game);
         
         //se crea a partir de un archivo cargado previamente en assets
         tablero = juego.assets.get(map);
@@ -171,12 +92,43 @@ public class Gameloop implements Screen
         tablero.addActor(player);
         controller.follow(player);
         
+        //añadir fichas
+        //Random random = new Random(System.currentTimeMillis());
+        Random random = new Random(100000L);
+        Sound sound = juego.assets.get("assets/cha-ching.wav");
+        Ficha[] fichas = new Ficha[]{
+        		new Ficha("ficha", Ficha.Tipo.Ficha_1, atlas, sound),
+        		new Ficha("ficha", Ficha.Tipo.Ficha_2, atlas, sound),
+                new Ficha("ficha", Ficha.Tipo.Ficha_3, atlas, sound),
+                new Ficha("ficha", Ficha.Tipo.Ficha_A, atlas, sound),
+                new Ficha("ficha", Ficha.Tipo.Ficha_B, atlas, sound),
+                new Ficha("ficha", Ficha.Tipo.Ficha_C, atlas, sound)
+        };
+        fichas[0].emparejar(fichas[3]);fichas[3].emparejar(fichas[0]);
+        fichas[1].emparejar(fichas[4]);fichas[4].emparejar(fichas[1]);
+        fichas[2].emparejar(fichas[5]);fichas[5].emparejar(fichas[2]);
+        
+        for(Ficha ficha: fichas)
+        {
+        	int i,j;
+        	do
+        	{
+        		i = 1+random.nextInt(9);
+        		j = 1+random.nextInt(9);
+        	}while(!tablero.Disponible(i, j));
+        	ficha.setPosition(i*32+4, j*32+4);
+        	tablero.addActor(ficha);
+        }
+        tablero.setTotalRecompensas(6);
+               
+        //musica
         if(Config.instance.getVolume() > 0)
         {
         	music.setLooping(true);
         	music.setVolume(Config.instance.getVolume());
         	music.play();
         }
+        setDebug(Config.instance.isDebug());
     }
 
     private Label recompensas;
@@ -207,8 +159,8 @@ public class Gameloop implements Screen
 				
 				musicSlider.setValue(Config.instance.getVolume());
 				musicBox.setChecked(Config.instance.getVolume()<=0);
-				iaSlider.setValue(Config.instance.getEnemyIntelligence());
-				debugBox.setChecked(getDebug());				
+				iaSlider.setValue(Config.instance.getEnemyIntelligence());				
+				debugBox.setChecked(Config.instance.isDebug());				
 				
 				musicBox.addListener(new ChangeListener()
 				{
@@ -235,7 +187,9 @@ public class Gameloop implements Screen
 					@Override
 					public void changed(ChangeEvent event, Actor source) 
 					{					
-						setDebug(debugBox.isChecked());
+						boolean b = debugBox.isChecked();
+						setDebug(b);
+						Config.instance.setDebug(b);
 					}					
 				});
 				

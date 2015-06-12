@@ -304,6 +304,48 @@ cube
   orig: 18, 27
   offset: 0, 0
   index: 2
+ficha
+  rotate: false
+  xy: 469, 100
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 1
+ficha
+  rotate: false
+  xy: 489, 100
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 2
+ficha
+  rotate: false
+  xy: 429, 71
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 3
+ficha
+  rotate: false
+  xy: 449, 71
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 4
+ficha
+  rotate: false
+  xy: 469, 71
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 5
+ficha
+  rotate: false
+  xy: 489, 71
+  size: 18, 27
+  orig: 18, 27
+  offset: 0, 0
+  index: 6
 digit
   rotate: false
   xy: 265, 54
@@ -334,42 +376,42 @@ digit
   index: 3
 digit
   rotate: false
-  xy: 429, 93
+  xy: 265, 47
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: 4
 digit
   rotate: false
-  xy: 469, 122
+  xy: 279, 62
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: 5
 digit
   rotate: false
-  xy: 265, 47
+  xy: 53, 13
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: 6
 digit
   rotate: false
-  xy: 279, 62
+  xy: 59, 20
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: 7
 digit
   rotate: false
-  xy: 53, 13
+  xy: 409, 74
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
   index: 8
 digit
   rotate: false
-  xy: 59, 20
+  xy: 265, 40
   size: 4, 5
   orig: 4, 5
   offset: 0, 0
