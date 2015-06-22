@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.IPieza;
-import com.egysoft.ia.juego.tablero.IPlayer;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
 import com.egysoft.ia.juego.tablero.IPushable;
@@ -41,7 +41,7 @@ public class Coin extends Pieza implements IPushable
 	public boolean push(IPieza pieza, int k, int m)
 	{
 		if(isPushing == true) return true;
-		if(pieza instanceof IPlayer)
+		if(pieza instanceof Player)
 		{
 			isPushing = true;
 			final ITablero t = getCeldaActual().t;

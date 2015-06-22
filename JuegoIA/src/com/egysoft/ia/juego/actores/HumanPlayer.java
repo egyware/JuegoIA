@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.State;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.IPlayer;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
@@ -25,7 +25,7 @@ import com.egysoft.ia.juego.tablero.Pieza;
  *
  * @author Edgardo
  */
-public class Player extends Pieza implements IPlayer
+public class HumanPlayer extends Player
 {
 	private static final float velocity = 50.0f;
 	
@@ -47,7 +47,7 @@ public class Player extends Pieza implements IPlayer
 	private float time;
     public boolean left, right,up, down;
     
-    public Player(String assetName, TextureAtlas atlas, Sound sound)
+    public HumanPlayer(String assetName, TextureAtlas atlas, Sound sound)
     {
     	Array<AtlasRegion> regions;
         Array<TextureRegion> array = new Array<>(4);
@@ -251,7 +251,7 @@ public class Player extends Pieza implements IPlayer
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x-14, y);
 				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, -1, 0);
+				cubo.push(HumanPlayer.this, -1, 0);
 			}
 			if(celda.Disponible(x-14,y))
 			{
@@ -305,7 +305,7 @@ public class Player extends Pieza implements IPlayer
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x+12, y);
 				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 1, 0);
+				cubo.push(HumanPlayer.this, 1, 0);
 			}
 			if(celda.Disponible(x+12, y))
 			{
@@ -358,7 +358,7 @@ public class Player extends Pieza implements IPlayer
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x, y-4);
 				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 0, -1);
+				cubo.push(HumanPlayer.this, 0, -1);
 			}
 			if(celda.Disponible(x, y-4))
 			{
@@ -412,7 +412,7 @@ public class Player extends Pieza implements IPlayer
 				//ohh!!! un cubo!!! que hacemos con el?
 				Celda celdaCubo = celda.t.getCelda(x, y+18);
 				IPushable cubo = (IPushable)celdaCubo.getPiezaActual();
-				cubo.push(Player.this, 0, 1);
+				cubo.push(HumanPlayer.this, 0, 1);
 			}
 			if(celda.Disponible(x, y+18))
 			{

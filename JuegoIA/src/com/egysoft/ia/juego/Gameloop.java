@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -23,6 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.egysoft.ia.juego.actores.Ficha;
 import com.egysoft.ia.juego.actores.IAPlayer;
+import com.egysoft.ia.juego.actores.HumanPlayer;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.Tablero;
 
 /**
@@ -42,6 +46,8 @@ public class Gameloop implements Screen
     private ShaderProgram grayShader;
     private ShaderProgram basicShader;
     private Music music;
+    private Player player;
+    private TextureAtlas atlas; 
     
     public Gameloop(JuegoIA juego)
     {
@@ -69,7 +75,7 @@ public class Gameloop implements Screen
         controller = new CameraController(game.getCamera());
         game.getBatch().setShader(basicShader);
         
-        final TextureAtlas atlas = juego.assets.get("assets/game.atlas");
+        atlas = juego.assets.get("assets/game.atlas");
         setGUI();
         
         multiplexor = new InputMultiplexer(hud, game);
@@ -86,15 +92,14 @@ public class Gameloop implements Screen
 //        tablero.addActor(player);
 //        controller.follow(player);
         
-        IAPlayer player;
         player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
         game.setKeyboardFocus(player);
         tablero.addActor(player);
         controller.follow(player);
         
         //añadir fichas
-        //Random random = new Random(System.currentTimeMillis());
-        Random random = new Random(100000L);
+        Random random = new Random(System.currentTimeMillis());
+        //Random random = new Random(100000L);
         Sound sound = juego.assets.get("assets/cha-ching.wav");
         Ficha[] fichas = new Ficha[]{
         		new Ficha("ficha", Ficha.Tipo.Ficha_1, atlas, sound),
@@ -104,9 +109,14 @@ public class Gameloop implements Screen
                 new Ficha("ficha", Ficha.Tipo.Ficha_B, atlas, sound),
                 new Ficha("ficha", Ficha.Tipo.Ficha_C, atlas, sound)
         };
+        //fichas[0].emparejar(fichas[1]);fichas[1].emparejar(fichas[0]);
         fichas[0].emparejar(fichas[3]);fichas[3].emparejar(fichas[0]);
         fichas[1].emparejar(fichas[4]);fichas[4].emparejar(fichas[1]);
         fichas[2].emparejar(fichas[5]);fichas[5].emparejar(fichas[2]);
+        
+//        fichas[0].setPosition(2*32+4,5*32+4);
+//        fichas[1].setPosition(8*32+4,5*32+4);
+        		
         
         for(Ficha ficha: fichas)
         {
@@ -132,6 +142,7 @@ public class Gameloop implements Screen
     }
 
     private Label recompensas;
+    private boolean showMenu = false;
     private void setGUI() 
     {
     	final Skin skin = juego.assets.get("assets/uiskin.json");
@@ -141,8 +152,97 @@ public class Gameloop implements Screen
     	hud.addActor(table);
     	
     	recompensas = new Label("", skin);
-        final TextButton opciones = new TextButton("Opciones",skin);
-        final TextButton salir = new TextButton("Salir",skin);
+    	
+    	final Dialog menu = new Dialog("Menu", skin);
+		TextButton continuar     = new TextButton("Continuar", skin);  
+		TextButton jugadorHumano = new TextButton("Jugador Humano", skin);
+		TextButton jugadorIA     = new TextButton("Jugador IA", skin);
+		TextButton opciones      = new TextButton("Opciones", skin);
+		TextButton salir         = new TextButton("Salir", skin);
+		
+		continuar.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{				
+				showMenu = false;
+				setPause(false);
+				menu.hide();
+			}
+        });
+		
+		jugadorHumano.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{				
+				tablero.removeActor(player);
+		        
+		        player = new HumanPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+		        game.setKeyboardFocus(player);
+		        tablero.addActor(player);
+		        controller.follow(player);
+			}
+        });
+		
+		jugadorIA.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{				
+				tablero.removeActor(player);
+		        
+		        player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+		        game.setKeyboardFocus(player);
+		        tablero.addActor(player);
+		        controller.follow(player);
+			}
+        });
+		
+		salir.addListener(new ChangeListener()
+        {
+				@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{
+				juego.showGameInit();
+			}
+		});
+		
+		
+		menu.row();				
+		menu.add(continuar).fillX();
+		menu.row();				
+		menu.add(jugadorHumano).fillX();
+		menu.row();				
+		menu.add(jugadorIA).fillX();
+		menu.row();				
+		menu.add(opciones).fillX();
+		menu.row();				
+		menu.add(salir).fillX();
+        
+        hud.addListener(new InputListener()
+        {
+        	public boolean keyTyped(InputEvent event, char key)
+        	{
+        		if(key == (char)27)
+        		{
+        			if(showMenu)
+        			{
+        				showMenu = false;
+        				setPause(false);              			
+            			menu.hide();
+        			}
+        			else
+        			{
+        				showMenu = true;
+        				setPause(true);              			
+            			menu.show(hud);
+        			}
+        			return true;
+        		}
+        		return false;
+        	}
+        });
         
         opciones.addListener(new ChangeListener()
         {
@@ -155,7 +255,8 @@ public class Gameloop implements Screen
 				CheckBox debugBox = new CheckBox("", skin);
 				Slider musicSlider = new Slider(0,10,1,false, skin);				
 				Slider iaSlider = new Slider(0,10,1, false, skin);
-				TextButton ok = new TextButton("Aceptar", skin);
+				TextButton ok     = new TextButton("Aceptar", skin);
+				
 				
 				musicSlider.setValue(Config.instance.getVolume());
 				musicBox.setChecked(Config.instance.getVolume()<=0);
@@ -215,8 +316,7 @@ public class Gameloop implements Screen
 					@Override
 					public void changed(ChangeEvent arg0, Actor arg1) 
 					{
-						dialog.hide();
-						setPause(false);
+						dialog.hide();						
 					}					
 				});
 				
@@ -227,30 +327,18 @@ public class Gameloop implements Screen
 				dialog.row();
 				dialog.add(new Label("Inteligencia",skin)).left();
 				dialog.add(iaSlider).colspan(2).left().fill();
-				dialog.row();
+				dialog.row();				
 				dialog.add(new Label("Debug",skin)).left();
 				dialog.add(debugBox).colspan(2).left();
-				dialog.row();
+				dialog.row();				
 				dialog.add(ok).colspan(3).center();
 				
 				dialog.show(hud);
 			}        	
         });
         
-        salir.addListener(new ChangeListener()
-        {
-			@Override
-			public void changed(ChangeEvent event, Actor source) 
-			{
-				juego.showGameInit();
-			}
-		});
-        
         table.row().expand();
-        table.add(recompensas).left().top();
-        table.add(opciones).right().top();        
-        table.row().expand();
-        table.add(salir).right().colspan(2).bottom();
+        table.add(recompensas).left().top();        
         
 	}
 

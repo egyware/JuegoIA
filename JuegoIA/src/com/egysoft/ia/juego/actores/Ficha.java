@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPieza;
-import com.egysoft.ia.juego.tablero.IPlayer;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
@@ -123,9 +123,20 @@ public class Ficha extends Pieza implements IPushable
 				));
 				return true;
 			} 
-			else //no son pareja 
+			else if(pieza instanceof Player)//no son pareja 
 			{
-				return false; // no puede ser empujado
+				final Player p = (Player)pieza;
+				p.push(this, k, m);
+				isPushing = true;			
+				addAction(Actions.sequence
+				(
+					Actions.moveBy(-k*t.boxWidth(), -m*t.boxHeight(),0.5f), 
+					new PushFalse()
+				));
+				return true;
+			}else
+			{
+				return false;
 			}
 						
 		}		
@@ -139,9 +150,9 @@ public class Ficha extends Pieza implements IPushable
 			));
 			return true;
 		}
-		else if(pieza instanceof IPlayer) //nop, no está isdisponible
+		else if(pieza instanceof Player) //nop, no está isdisponible
 		{
-			final IPlayer p = (IPlayer)pieza;
+			final Player p = (Player)pieza;
 			p.push(this, k, m);
 			isPushing = true;			
 			addAction(Actions.sequence
@@ -169,7 +180,7 @@ public class Ficha extends Pieza implements IPushable
 		this.pareja = ficha;		
 	}
 
-	public Pieza getPareja() 
+	public Ficha getPareja() 
 	{
 		return pareja;
 	}

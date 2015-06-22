@@ -76,7 +76,7 @@ public class Tablero extends Group implements ITablero
     @Override
     public void addActor(Actor actor)
     {
-    	if(actor instanceof IPlayer)
+    	if(actor instanceof Player)
     	{
     		actor.setPosition(xi+Tablero.ColumnWidth/2, yi+Tablero.ColumnHeight/2);    		
     	}
@@ -224,7 +224,7 @@ public class Tablero extends Group implements ITablero
 
 	public void setPausa(boolean pause)
 	{
-		pausa = pause;		
+		pausa = pause;
 	}
 
 	public boolean getGameDebug()

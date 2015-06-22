@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.egysoft.ia.juego.Config;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.IPieza;
-import com.egysoft.ia.juego.tablero.IPlayer;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Pieza;
 import com.egysoft.ia.juego.tablero.IPushable;
@@ -83,9 +83,9 @@ public class Cube extends Pieza implements IPushable
 			if(otro.push(this,k, m)) return true;			
 			else 
 			{
-				if(pieza instanceof IPlayer) //nop, no está isdisponible
+				if(pieza instanceof Player) //nop, no está isdisponible
 				{
-					final Player p = (Player)pieza;
+					final HumanPlayer p = (HumanPlayer)pieza;
 					p.push(this, k, m);
 					isPushing = true;			
 					addAction(Actions.sequence
@@ -106,9 +106,9 @@ public class Cube extends Pieza implements IPushable
 			));
 			return true;
 		}
-		else if(pieza instanceof IPlayer) //nop, no está isdisponible
+		else if(pieza instanceof Player) //nop, no está isdisponible
 		{
-			final IPlayer p = (IPlayer)pieza;
+			final Player p = (Player)pieza;
 			p.push(this, k, m);
 			isPushing = true;			
 			addAction(Actions.sequence

@@ -15,19 +15,19 @@ public class BusquedaAStar implements Busqueda
 	
 	public static interface H
 	{
-		public int h(Celda actual);
+		public int h(Celda proxima);
 	}
 	public static interface G
 	{
-		public int g(int costo, Celda actual);
+		public int g(int costo, Celda proxima);
 	}
 	public static interface C extends Comparator<EstadoCosto>
 	{		
 	}
 
-	private final G g;
-	private final H h;
-	private final C c;
+	protected final G g;
+	protected final H h;
+	protected final C c;
 	public BusquedaAStar(G g, H h, C c)
 	{
 		this.g = g;
@@ -80,8 +80,8 @@ public class BusquedaAStar implements Busqueda
 			for(Operacion operacion:operaciones)
 			{
 				Celda proxima = actual.celda.Obtener(operacion.k, operacion.m);
-				if(agenda.containsKey(proxima)) continue;
-				if(proxima != null && !(proxima.getPiezaActual() instanceof Wall))
+				if(proxima != null && agenda.containsKey(proxima)) continue; // si la celda proxima ya fue visitada, omitir
+				if(proxima != null && proxima.Disponible(Wall.class))
 				{
 					EstadoCosto ec = new EstadoCosto(proxima, operacion, actual, g(actual.costo, proxima)+h(proxima));
 					//System.out.printf("Añadiendo: %15s = f(%d) + h(%d)\n", ec, g(actual.costo, proxima),h(proxima));
@@ -93,12 +93,12 @@ public class BusquedaAStar implements Busqueda
 		return null;
 	}
 	
-	public int g(int costo, Celda actual)
+	public int g(int costo, Celda proxima)
 	{
-		return g.g(costo, actual);
+		return g.g(costo, proxima);
 	}
-	public int h(Celda actual)
+	public int h(Celda proxima)
 	{
-		return h.h(actual);
+		return h.h(proxima);
 	}
 }

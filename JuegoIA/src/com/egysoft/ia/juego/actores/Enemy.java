@@ -82,9 +82,9 @@ public class Enemy extends Pieza
 		{		
 			final Celda celda = getCeldaActual();
 			final float x = getX(), y = getY();
-			if(!celda.Disponible(Player.class, x-8, y))
+			if(!celda.Disponible(HumanPlayer.class, x-8, y))
 			{
-				Player p = (Player) celda.t.getCelda(x-8, y).getPiezaActual();
+				HumanPlayer p = (HumanPlayer) celda.t.getCelda(x-8, y).getPiezaActual();
 				p.hunted(Enemy.this);
 				setX(x-velocity*delta);
 			}
@@ -118,9 +118,9 @@ public class Enemy extends Pieza
 		{		
 			final float x = getX(), y = getY();			
 			final Celda celda = getCeldaActual();
-			if(!celda.Disponible(Player.class, x+8, y))
+			if(!celda.Disponible(HumanPlayer.class, x+8, y))
 			{
-				Player p = (Player) celda.t.getCelda(x+8, y).getPiezaActual();
+				HumanPlayer p = (HumanPlayer) celda.t.getCelda(x+8, y).getPiezaActual();
 				p.hunted(Enemy.this);
 				setX(x+velocity*delta);
 			}
@@ -155,9 +155,9 @@ public class Enemy extends Pieza
 			final Celda celda = getCeldaActual();
 			final float x = getX(), y = getY();
 			
-			if(!celda.Disponible(Player.class, x, y-4))
+			if(!celda.Disponible(HumanPlayer.class, x, y-4))
 			{
-				Player p = (Player) celda.t.getCelda(x, y-4).getPiezaActual();
+				HumanPlayer p = (HumanPlayer) celda.t.getCelda(x, y-4).getPiezaActual();
 				p.hunted(Enemy.this);
 				setY(getY()-velocity*delta);
 			}else
@@ -192,9 +192,9 @@ public class Enemy extends Pieza
 			final Celda celda = getCeldaActual();
 			final float x = getX(), y = getY();
 			//EL JUGADOR!!!
-			if(!celda.Disponible(Player.class, x, y+18))
+			if(!celda.Disponible(HumanPlayer.class, x, y+18))
 			{
-				Player p = (Player) celda.t.getCelda(x, y+18).getPiezaActual();
+				HumanPlayer p = (HumanPlayer) celda.t.getCelda(x, y+18).getPiezaActual();
 				p.hunted(Enemy.this);
 				setY(getY()+velocity*delta);
 			}else

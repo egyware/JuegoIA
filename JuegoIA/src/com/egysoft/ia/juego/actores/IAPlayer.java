@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
@@ -18,7 +19,8 @@ import com.egysoft.ia.juego.algoritmos.Busqueda;
 import com.egysoft.ia.juego.algoritmos.BusquedaAStar;
 import com.egysoft.ia.juego.algoritmos.Estado;
 import com.egysoft.ia.juego.tablero.Celda;
-import com.egysoft.ia.juego.tablero.IPlayer;
+import com.egysoft.ia.juego.tablero.IPieza;
+import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.IPushable;
 import com.egysoft.ia.juego.tablero.ITablero;
 import com.egysoft.ia.juego.tablero.Operacion;
@@ -29,9 +31,9 @@ import com.egysoft.ia.juego.tablero.Tablero;
  *
  * @author Edgardo
  */
-public class IAPlayer extends Pieza implements IPlayer
+public class IAPlayer extends Player
 {
-	private static final float velocity = 30.0f; // 50 pix/s
+	private static final float velocity = 50.0f; // 50 pix/s
 	private static final float movtime = 32/velocity; // 32 pix / 50 pix/s
 	
 	private static final Comparator<Array<Estado>> masCorto = new Comparator<Array<Estado>>()
@@ -55,13 +57,14 @@ public class IAPlayer extends Pieza implements IPlayer
     private final RightState rightState;
     private final DownState downState;
     private final UpState upState;
-    private final NullState nullState;
+    private final NullState nullState;    
     private State currentState;
     
 	private float time;    
     
     public IAPlayer(String assetName, TextureAtlas atlas, Sound sound)
     {
+    	setDebug(true);
     	Array<AtlasRegion> regions;
         Array<TextureRegion> array = new Array<>(4);
         array.add(null); //relleno con nulls
@@ -102,7 +105,7 @@ public class IAPlayer extends Pieza implements IPlayer
         leftState = new LeftState();
         rightState = new RightState();
         idleState = new IdleState();
-        nullState = new NullState();
+        nullState = new NullState();        
         selected = downAnimation; //deje este para el ultimo
         
         popEstado = new PopEstado();
@@ -113,34 +116,14 @@ public class IAPlayer extends Pieza implements IPlayer
     }
     
     //private Busqueda algoritmo = new BusquedaPorAnchura();
-    private Busqueda algoritmo = new BusquedaAStar(
-    new BusquedaAStar.G() 
-    {		
-		@Override
-		public int g(int costo, Celda actual) 
-		{
-			return costo+1;
-		}
-	},
-	new BusquedaAStar.H()
-	{
-		@Override
-		public int h(Celda actual) 
-		{
-			int h=0;
-			Array<Ficha> fichas = getCeldaActual().t.get(Ficha.class);
-			for(Ficha ficha:fichas)
-			{
-				final Celda celda = ficha.getCeldaActual();
-				h+= Math.abs(actual.i - celda.i) + Math.abs(actual.j-celda.j);
-			}			
-			return h;
-		}		
-	});
+ 
+    private BusquedaAStarEvitando algoritmo = new BusquedaAStarEvitando();
     
     private final PopEstado popEstado;
     private Array<Estado> operaciones;
     private Estado estado = null;
+    private boolean isHunted;
+    private Celda evitar;
     @Override
     public void	act(float delta)
     {
@@ -184,23 +167,38 @@ public class IAPlayer extends Pieza implements IPlayer
 			
 			Array<Array<Estado>> rutas = new Array<Array<Estado>>();
 			Array<Ficha> fichas = actual.t.get(Ficha.class);	
-			for(int i=0;i<fichas.size;i++) //a la antigüita no má
+			for(int i=0;i<fichas.size;i++) //a la antiguita no má
 			{
-				final Ficha ficha = fichas.get(i);
-				Array<Estado> ruta1 = algoritmo.buscar(ficha.getCeldaActual(), ficha.getPareja().getCeldaActual());
-				Estado ultimo = ruta1.first();
-				Operacion ultima = ultimo.operacion;
-				Celda inicio_ruta2 = ultimo.celda.Disponible(ultima.k,ultima.m)?ultimo.celda.Obtener(ultima.k, ultima.m):ultimo.celda.Obtener(-ultima.k, -ultima.m);
-				Array<Estado> ruta2 = algoritmo.buscar(inicio_ruta2, actual);				
+				final Ficha fichaA  = fichas.get(i);
+				final Ficha fichaB  = fichaA.getPareja();
+				Array<Estado> ruta1 = algoritmo.buscar(fichaA.getCeldaActual(), fichaB.getCeldaActual());				
+				Estado ultimo       = ruta1.first();
+				Operacion ultima    = ultimo.operacion;
+				Celda celda         = ultimo.celda;
+				Celda inicio_ruta2;
+				if(celda.Disponible(Wall.class, ultima.k, ultima.m) && 
+				   celda.Disponible(IPushable.class, ultima.k, ultima.m))
+				{
+					inicio_ruta2 = celda.Obtener( ultima.k,  ultima.m);
+				}				
+				else
+				{
+					inicio_ruta2 = celda.Obtener(-ultima.k, -ultima.m);
+				}			
+							    			    
+				Array<Estado> ruta2 = algoritmo.buscar(inicio_ruta2, actual, evitar);			
 
 				Array<Estado> ruta = combinar(ruta1, ruta2);
+				
 				//System.out.println(ruta);
 				
 				if(ruta != null) rutas.add(ruta);				
 			}
+			evitar = null;
 			rutas.sort(masCorto);
 			
 			if(rutas.size > 0) operaciones = rutas.first();
+			//operaciones = rutas.get(1);
 			
     		if(operaciones == null)
     		{
@@ -208,14 +206,14 @@ public class IAPlayer extends Pieza implements IPlayer
     			return;
     		}	    		
     		
-    		System.out.println(String.format("Ruta: %s",operaciones.toString()));			
+    		//System.out.println(String.format("Ruta: %s",operaciones.toString()));			
 	    	
 	    	if(operaciones != null && operaciones.size > 0)
 	    	{
 	    		clearActions();
 	    		addAction(popEstado);
 	    	}	    	
-		}		
+		}
     }
     /**
      * Combina dos rutas
@@ -223,7 +221,7 @@ public class IAPlayer extends Pieza implements IPlayer
      * @param ruta2 ruta desde la celda siguiente de la ficha Y hasta el jugador
      * @return ruta desde el jugador hasta la ficha X
      */
-    private static Array<Estado> combinar(Array<Estado> ruta1, Array<Estado> ruta2) 
+    private Array<Estado> combinar(Array<Estado> ruta1, Array<Estado> ruta2) 
 	{
 		if(ruta1 == null || ruta2 == null) return null;
 		Array<Estado> ruta = new Array<Estado>();
@@ -233,12 +231,12 @@ public class IAPlayer extends Pieza implements IPlayer
 		Estado anterior = new Estado(inicial.celda);
 		ruta.add(anterior);
 		
-		System.out.println(ruta2);
 		for(int i = 1;i<ruta2.size;i++)
 		{
 			Estado actual = ruta2.get(i);
 			int k = anterior.celda.i - actual.celda.i;
 			int m = anterior.celda.j - actual.celda.j;
+			
 			if(k==-1 && m == 0)
 				anterior = new Estado(actual.celda, Operacion.Derecha ,anterior);
 			if(k==1 && m == 0)
@@ -247,6 +245,7 @@ public class IAPlayer extends Pieza implements IPlayer
 				anterior = new Estado(actual.celda, Operacion.Arriba ,anterior);
 			if(k==0 && m == 1)
 				anterior = new Estado(actual.celda, Operacion.Abajo ,anterior);
+			
 			ruta.add(anterior);
 		}
 		
@@ -255,6 +254,7 @@ public class IAPlayer extends Pieza implements IPlayer
 			Estado actual = ruta1.get(i);
 			int k = anterior.celda.i - actual.celda.i;
 			int m = anterior.celda.j - actual.celda.j;
+			
 			if(k==-1 && m == 0)
 				anterior = new Estado(actual.celda, Operacion.Derecha ,anterior);
 			if(k==1 && m == 0)
@@ -410,6 +410,7 @@ public class IAPlayer extends Pieza implements IPlayer
 			}
 		}    	
     }
+  
     public class NullState implements State
     {
 		@Override
@@ -419,23 +420,39 @@ public class IAPlayer extends Pieza implements IPlayer
 
 		@Override
 		public void update(float delta) 
-		{			
+		{	
 		}    	
-    }
+    }    
     public class PopEstado extends Action
     {
 		@Override
 		public boolean act(float arg0) 
 		{
-			if(operaciones != null && operaciones.size > 0)
+			if(operaciones != null && operaciones.size > 1)
 			{
+				final int size = operaciones.size;
 				do
 				{
+					if(estado != null && Operacion.Inicial != estado.operacion)
+					{
+					    Estado sigA = operaciones.get(size - 1);
+						//Estado sigB = operaciones.get(size - 2);
+						
+						//el que sigue es una ficha
+						if(!sigA.celda.Disponible(Ficha.class))
+						{
+							evitar = sigA.celda;
+							setState(idleState);
+							return true;														
+						}
+					}
+					
 					estado = operaciones.pop();
 				}
 				while(Operacion.Inicial == estado.operacion && operaciones.size > 0); //solo doy una vueltecita más si esta operacion es Inicial
+				
 				System.out.println(estado);
-    			switch(estado.operacion) //voy al revez
+    			switch(estado.operacion) 
     	    	{
     			case Abajo:
     				setState(downState);
@@ -453,7 +470,7 @@ public class IAPlayer extends Pieza implements IPlayer
     				break;
     			default:
     				break;    	
-    	    	}
+    	    	}    			
 			}
 			else
 			{
@@ -480,10 +497,8 @@ public class IAPlayer extends Pieza implements IPlayer
 				}						
 			}
 		));		
-	}
+	}	
 	
-	
-	private boolean isHunted;
 	public void hunted(Enemy enemy)
 	{
 		if(isHunted) return;
@@ -503,5 +518,114 @@ public class IAPlayer extends Pieza implements IPlayer
 				}
 			}			
 		));		
-	}    
+	}
+	
+	private class EvitarCelda implements BusquedaAStar.H
+	{
+		public Celda evitar;
+		public Celda destino;
+		
+		@Override
+		public int h(Celda actual) 
+		{
+			if(evitar != null && evitar == actual)
+			{
+				return 100000000;
+			}			
+			
+			return Math.abs(actual.i - destino.i) + Math.abs(actual.j-destino.j);			
+			
+		}	
+	}
+	private class CostoNormal implements BusquedaAStar.G
+	{	 		
+		@Override
+		public int g(int costo, Celda actual) 
+		{
+			return costo+1;
+		}
+	}
+	
+	private class BusquedaAStarEvitando extends BusquedaAStar
+	{
+		private final EvitarCelda avoid;
+		public BusquedaAStarEvitando() 
+		{
+			super(new CostoNormal(), new EvitarCelda());
+			avoid = (EvitarCelda)h;
+		}
+		
+		public Array<Estado> buscar(Celda origen, Celda destino, Celda evitar)
+		{
+			avoid.destino = destino;
+			avoid.evitar = evitar;
+			Array<Estado> resultado = super.buscar(origen, destino);			
+			return resultado;
+		}
+		public Array<Estado> buscar(Celda origen, Celda destino)
+		{
+			return buscar(origen, destino, null);
+		}
+		
+	}
+	
+
+	public void drawDebug(ShapeRenderer shapes)
+	{
+		if(operaciones != null && operaciones.size > 0)
+		{	
+			int x1=0,x2=0,y1=0,y2=0;
+			shapes.setColor(Color.BLUE);
+			Estado ultimo = operaciones.first();//en realidad es el primero xD			
+			x1 = ultimo.celda.x+16;
+			y1 = ultimo.celda.y+16;
+			for(Estado estado: operaciones)
+			{
+				Celda celda = estado.celda;
+				
+				if(Operacion.Inicial == estado.operacion)
+				{
+					x2 = celda.x+16;
+					y2 = celda.y+16;
+					shapes.line(x1,y1,x2,y2);
+					shapes.circle(x2, y2, 5);
+				}
+				else
+				{
+					switch(estado.operacion)
+					{
+					case Abajo:
+						x2 = celda.x+16;
+						y2 = celda.y+16;
+						shapes.line(x2, y2, x2-5, y2+5);
+						shapes.line(x2, y2, x2+5, y2+5);
+						break;
+					case Arriba:
+						x2 = celda.x+16;
+						y2 = celda.y+16;
+						shapes.line(x2, y2, x2-5, y2-5);
+						shapes.line(x2, y2, x2+5, y2-5);
+						break;
+					case Derecha:
+						x2 = celda.x+16;
+						y2 = celda.y+16;
+						shapes.line(x2, y2, x2-5, y2-5);
+						shapes.line(x2, y2, x2-5, y2+5);
+						break;				
+					case Izquierda:
+						x2 = celda.x+16;
+						y2 = celda.y+16;
+						shapes.line(x2, y2, x2+5, y2-5);
+						shapes.line(x2, y2, x2+5, y2+5);
+						break;	
+					default:
+						break;
+					}					
+					shapes.line(x1, y1, x2, y2);					
+				}
+				x1 = x2;
+				y1 = y2;
+			}
+		}
+	}
 }
