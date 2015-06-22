@@ -27,15 +27,25 @@ public class GameInit implements Screen
     	hud.addActor(table);
     	final Skin skin = juego.assets.get("assets/uiskin.json");
     	
-    	final TextButton iniciar = new TextButton("Iniciar",skin);
+    	final TextButton iniciarA = new TextButton("Iniciar Modo A",skin);
+    	final TextButton iniciarB = new TextButton("Iniciar Modo B",skin);
     	final TextButton salir = new TextButton("Salir",skin);
     	
-        iniciar.addListener(new ChangeListener()
+        iniciarA.addListener(new ChangeListener()
         {
 			@Override
 			public void changed(ChangeEvent event, Actor source) 
 			{
-				juego.showGameloop();
+				juego.showGameloop(Gameloop.Modo.A);
+			}
+        });
+        
+        iniciarB.addListener(new ChangeListener()
+        {
+			@Override
+			public void changed(ChangeEvent event, Actor source) 
+			{
+				juego.showGameloop(Gameloop.Modo.B);
 			}
         });
                 
@@ -49,7 +59,9 @@ public class GameInit implements Screen
         });
         
         table.row();
-        table.add(iniciar).fillX();
+        table.add(iniciarA).fillX();
+        table.row();
+        table.add(iniciarB).fillX();
         table.row();
         table.add(salir).fillX();
 	}

@@ -24,7 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.egysoft.ia.juego.actores.Ficha;
-import com.egysoft.ia.juego.actores.IAPlayer;
+import com.egysoft.ia.juego.actores.IAPlayerA;
+import com.egysoft.ia.juego.actores.IAPlayerB;
 import com.egysoft.ia.juego.actores.HumanPlayer;
 import com.egysoft.ia.juego.tablero.Player;
 import com.egysoft.ia.juego.tablero.Tablero;
@@ -35,6 +36,11 @@ import com.egysoft.ia.juego.tablero.Tablero;
  */
 public class Gameloop implements Screen
 {
+	public static enum Modo
+	{
+		A,
+		B
+	}
 	private boolean debug;
     private final JuegoIA juego;
     private final Stage game;
@@ -48,12 +54,19 @@ public class Gameloop implements Screen
     private Music music;
     private Player player;
     private TextureAtlas atlas; 
+    private Modo modo;
     
-    public Gameloop(JuegoIA juego)
+    public Gameloop(JuegoIA juego, Modo modo)
     {
         this.juego = juego;
+        this.modo = modo;
         
-        final String map = "assets/maps/map_certamen.txt";
+        final String map;
+        if(modo == Modo.B)
+        	map	= "assets/maps/map_certamen.txt";
+        else
+        	map	= "assets/maps/map_01.txt";
+        
         juego.assets.load("assets/game.atlas", TextureAtlas.class);
         juego.assets.load("assets/shaders/gray.shader", ShaderProgram.class);
         juego.assets.load("assets/shaders/basic.shader", ShaderProgram.class);
@@ -86,50 +99,53 @@ public class Gameloop implements Screen
         
         game.addActor(tablero);        
         
-//        Player player;
-//        player = new Player("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
-//        game.setKeyboardFocus(player);
-//        tablero.addActor(player);
-//        controller.follow(player);
-        
-        player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+        player = new HumanPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
         game.setKeyboardFocus(player);
         tablero.addActor(player);
         controller.follow(player);
         
-        //añadir fichas
-        Random random = new Random(System.currentTimeMillis());
-        //Random random = new Random(100000L);
-        Sound sound = juego.assets.get("assets/cha-ching.wav");
-        Ficha[] fichas = new Ficha[]{
-        		new Ficha("ficha", Ficha.Tipo.Ficha_1, atlas, sound),
-        		new Ficha("ficha", Ficha.Tipo.Ficha_2, atlas, sound),
-                new Ficha("ficha", Ficha.Tipo.Ficha_3, atlas, sound),
-                new Ficha("ficha", Ficha.Tipo.Ficha_A, atlas, sound),
-                new Ficha("ficha", Ficha.Tipo.Ficha_B, atlas, sound),
-                new Ficha("ficha", Ficha.Tipo.Ficha_C, atlas, sound)
-        };
-        //fichas[0].emparejar(fichas[1]);fichas[1].emparejar(fichas[0]);
-        fichas[0].emparejar(fichas[3]);fichas[3].emparejar(fichas[0]);
-        fichas[1].emparejar(fichas[4]);fichas[4].emparejar(fichas[1]);
-        fichas[2].emparejar(fichas[5]);fichas[5].emparejar(fichas[2]);
+//        player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+//        game.setKeyboardFocus(player);
+//        tablero.addActor(player);
+//        controller.follow(player);
         
-//        fichas[0].setPosition(2*32+4,5*32+4);
-//        fichas[1].setPosition(8*32+4,5*32+4);
-        		
-        
-        for(Ficha ficha: fichas)
-        {
-        	int i,j;
-        	do
-        	{
-        		i = 1+random.nextInt(9);
-        		j = 1+random.nextInt(9);
-        	}while(!tablero.Disponible(i, j));
-        	ficha.setPosition(i*32+4, j*32+4);
-        	tablero.addActor(ficha);
-        }
-        tablero.setTotalRecompensas(6);
+		if(modo == Modo.B)
+		{
+			//añadir fichas
+	        Random random = new Random(System.currentTimeMillis());
+	        //Random random = new Random(100000L);
+	        Sound sound = juego.assets.get("assets/cha-ching.wav");
+	        Ficha[] fichas = new Ficha[]{
+	        		new Ficha("ficha", Ficha.Tipo.Ficha_1, atlas, sound),
+	        		new Ficha("ficha", Ficha.Tipo.Ficha_2, atlas, sound),
+	                new Ficha("ficha", Ficha.Tipo.Ficha_3, atlas, sound),
+	                new Ficha("ficha", Ficha.Tipo.Ficha_A, atlas, sound),
+	                new Ficha("ficha", Ficha.Tipo.Ficha_B, atlas, sound),
+	                new Ficha("ficha", Ficha.Tipo.Ficha_C, atlas, sound)
+	        };
+	        //fichas[0].emparejar(fichas[1]);fichas[1].emparejar(fichas[0]);
+	        fichas[0].emparejar(fichas[3]);fichas[3].emparejar(fichas[0]);
+	        fichas[1].emparejar(fichas[4]);fichas[4].emparejar(fichas[1]);
+	        fichas[2].emparejar(fichas[5]);fichas[5].emparejar(fichas[2]);
+	        
+//	        fichas[0].setPosition(2*32+4,5*32+4);
+//	        fichas[1].setPosition(8*32+4,5*32+4);
+	        		
+	        
+	        for(Ficha ficha: fichas)
+	        {
+	        	int i,j;
+	        	do
+	        	{
+	        		i = 1+random.nextInt(9);
+	        		j = 1+random.nextInt(9);
+	        	}while(!tablero.Disponible(i, j));
+	        	ficha.setPosition(i*32+4, j*32+4);
+	        	tablero.addActor(ficha);
+	        }
+	        tablero.setTotalRecompensas(6);
+		}
+           
                
         //musica
         if(Config.instance.getVolume() > 0)
@@ -192,10 +208,20 @@ public class Gameloop implements Screen
 			{				
 				tablero.removeActor(player);
 		        
-		        player = new IAPlayer("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
-		        game.setKeyboardFocus(player);
-		        tablero.addActor(player);
-		        controller.follow(player);
+				if(modo == Modo.B)
+				{
+					player = new IAPlayerB("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+					game.setKeyboardFocus(player);
+					tablero.addActor(player);
+					controller.follow(player);		        
+				}
+				else
+				{
+					player = new IAPlayerA("jasper", atlas, juego.assets.get("assets/ScreamAndDie.wav"));
+					game.setKeyboardFocus(player);
+					tablero.addActor(player);
+					controller.follow(player);
+				}
 			}
         });
 		

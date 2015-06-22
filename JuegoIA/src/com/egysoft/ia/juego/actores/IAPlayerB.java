@@ -31,7 +31,7 @@ import com.egysoft.ia.juego.tablero.Tablero;
  *
  * @author Edgardo
  */
-public class IAPlayer extends Player
+public class IAPlayerB extends Player
 {
 	private static final float velocity = 50.0f; // 50 pix/s
 	private static final float movtime = 32/velocity; // 32 pix / 50 pix/s
@@ -62,7 +62,7 @@ public class IAPlayer extends Player
     
 	private float time;    
     
-    public IAPlayer(String assetName, TextureAtlas atlas, Sound sound)
+    public IAPlayerB(String assetName, TextureAtlas atlas, Sound sound)
     {
     	setDebug(true);
     	Array<AtlasRegion> regions;
@@ -295,7 +295,7 @@ public class IAPlayer extends Player
 			{
 				//ohh!!! un cubo!!! que hacemos con el?				
 				IPushable cubo = (IPushable)celda.getPiezaActual();
-				if(cubo.push(IAPlayer.this, -1, 0)) return;				
+				if(cubo.push(IAPlayerB.this, -1, 0)) return;				
 			}
 			
 			if(celda.Disponible())
@@ -329,7 +329,7 @@ public class IAPlayer extends Player
 			{
 				//ohh!!! un cubo!!! que hacemos con el?				
 				IPushable cubo = (IPushable)celda.getPiezaActual();
-				if(cubo.push(IAPlayer.this, 1, 0)) return;
+				if(cubo.push(IAPlayerB.this, 1, 0)) return;
 			}
 			if(celda.Disponible())
 			{
@@ -362,7 +362,7 @@ public class IAPlayer extends Player
 			{
 				//ohh!!! un cubo!!! que hacemos con el?				
 				IPushable cubo = (IPushable)celda.getPiezaActual();
-				if(cubo.push(IAPlayer.this, 0, -1))return;
+				if(cubo.push(IAPlayerB.this, 0, -1))return;
 			}
 			if(celda.Disponible())
 			{
@@ -395,7 +395,7 @@ public class IAPlayer extends Player
 			{
 				//ohh!!! un cubo!!! que hacemos con el?				
 				IPushable cubo = (IPushable)celda.getPiezaActual();
-				if(cubo.push(IAPlayer.this, 0, 1)) return;
+				if(cubo.push(IAPlayerB.this, 0, 1)) return;
 			}
 			if(celda.Disponible())
 			{
@@ -528,12 +528,17 @@ public class IAPlayer extends Player
 		@Override
 		public int h(Celda actual) 
 		{
+			int h = Math.abs(actual.i - destino.i) + Math.abs(actual.j-destino.j);
 			if(evitar != null && evitar == actual)
 			{
-				return 100000000;
-			}			
+				h *= 1000;
+			}
+			if(actual != destino && !actual.Disponible(Ficha.class))
+			{
+				h *= 1000;
+			}
 			
-			return Math.abs(actual.i - destino.i) + Math.abs(actual.j-destino.j);			
+			return h;			
 			
 		}	
 	}

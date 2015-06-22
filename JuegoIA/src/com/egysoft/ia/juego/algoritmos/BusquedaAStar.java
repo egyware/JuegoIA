@@ -5,6 +5,7 @@ import java.util.PriorityQueue;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.egysoft.ia.juego.actores.Lair;
 import com.egysoft.ia.juego.actores.Wall;
 import com.egysoft.ia.juego.tablero.Celda;
 import com.egysoft.ia.juego.tablero.Operacion;

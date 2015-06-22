@@ -47,11 +47,11 @@ public class JuegoIA extends Game
 		setScreen(new GameInit(this));		
 	}
 
-	public void showGameloop() 
+	public void showGameloop(Gameloop.Modo modo) 
 	{
 		Screen screen = getScreen();
 		if(screen != null)screen.dispose();
 		assets.clear();
-		setScreen(new Gameloop(this));		
-	}
+		setScreen(new Gameloop(this, modo));		
+	}	
 }
